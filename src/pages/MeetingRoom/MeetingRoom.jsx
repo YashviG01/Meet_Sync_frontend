@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-
+import RemoteVideo from "../../../components/meeting/RemoteVideo";
 import socket from "../../../socket/socket";
 
 const MeetingRoom = () => {
@@ -11,7 +11,7 @@ const MeetingRoom = () => {
   const [participantCount, setParticipantCount] = useState(0);
   const [typingUser, setTypingUser] = useState("");
   const localVideoRef = useRef(null);
-  const remoteVideoRef = useRef(null);
+  // const remoteVideoRef = useRef(null);
   const localStreamRef = useRef(null);
   const screenStreamRef = useRef(null);
   const [remoteStreams, setRemoteStreams] = useState({});
@@ -450,11 +450,33 @@ const MeetingRoom = () => {
     });
 
     //to make sure last frame does not remain oncet the user leaves
-    socket.on("user-left", () => {
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = null;
-      }
+    socket.on(
+  "user-left",
+  ({ socketId }) => {
+
+    setRemoteStreams((prev) => {
+      const updated = { ...prev };
+
+      delete updated[socketId];
+
+      return updated;
     });
+
+    if (
+      peerConnections.current[
+        socketId
+      ]
+    ) {
+      peerConnections.current[
+        socketId
+      ].close();
+
+      delete peerConnections.current[
+        socketId
+      ];
+    }
+  }
+);
 
     socket.on("existing-participants", async (participants) => {
       for (const participant of participants) {
@@ -505,8 +527,19 @@ const MeetingRoom = () => {
         <h1>Meeting Room</h1>
 
         <h2>Room: {roomId}</h2>
+         
 
-        <video ref={remoteVideoRef} autoPlay playsInline />
+         <div>
+  {Object.entries(remoteStreams).map(
+    ([socketId, stream]) => (
+      <RemoteVideo
+        key={socketId}
+        stream={stream}
+      />
+    )
+  )}
+</div>
+        {/* <video ref={remoteVideoRef} autoPlay playsInline /> */}
         <video ref={localVideoRef} autoPlay playsInline muted />
 
         <button onClick={toggleMic}>

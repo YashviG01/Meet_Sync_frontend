@@ -6,7 +6,7 @@ import {
 
 import Home from "./pages/Home";
 import JoinMeeting from "./pages/JoinMeeting";
-import MeetingRoom from "./pages/MeetingRoom";
+import MeetingRoom from "./pages/MeetingRoom/MeetingRoom";
 
 function App() {
   return (

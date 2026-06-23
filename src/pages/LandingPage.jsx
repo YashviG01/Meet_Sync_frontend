@@ -1,9 +1,10 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Video, Monitor, Calendar, Shield, MessageSquare, BarChart2,
-  ArrowRight, Globe, Twitter, Linkedin, Mail, Menu, X
+  ArrowRight, Globe, Mail, Menu, X
 } from "lucide-react";
-
+// import {woman} from "../assets/woman.jpg"
 // const Logo = () => (
 //   <svg width="30" height="30" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
 //     <defs>
@@ -64,6 +65,7 @@ export default function LandingPage() {
   const trustedBy = ["VELOCITY", "QUANTUM", "NEXUS", "PULSE", "ORBIT"];
 
   return (
+    // parent container
     <div className="min-h-screen bg-white font-sans text-gray-900">
       {/* Navbar */}
       <nav className="sticky top-0 z-50 bg-white border-b border-gray-100">
@@ -77,21 +79,21 @@ export default function LandingPage() {
           </div>
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-7 text-sm font-medium text-gray-600">
-            <a href="#" className="text-indigo-600 border-b-2 border-indigo-600 pb-0.5">Features</a>
+            <a href="#" className="text-indigo-500 border-b-2 border-indigo-500 pb-0.5">Features</a>
             <a href="#" className="hover:text-gray-900 transition-colors">Pricing</a>
             <a href="#" className="hover:text-gray-900 transition-colors">Enterprise</a>
             <a href="#" className="hover:text-gray-900 transition-colors">About</a>
           </div>
           <div className="hidden md:flex items-center gap-3">
-            <a href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5 transition-colors">
+            <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-1.5 transition-colors">
               Log In
-            </a>
-            <a
-              href="/signup"
-              className="text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-colors"
+            </Link>
+            <Link
+              to="/signup"
+              className="text-sm font-semibold bg-indigo-500 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-colors"
             >
               Get Started
-            </a>
+            </Link>
           </div>
           <button className="md:hidden p-1" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -99,12 +101,12 @@ export default function LandingPage() {
         </div>
         {menuOpen && (
           <div className="md:hidden bg-white border-t border-gray-100 px-5 pb-4 flex flex-col gap-3 text-sm font-medium text-gray-700">
-            <a href="#" className="pt-3 text-indigo-600">Features</a>
+            <a href="#" className="pt-3 text-indigo-500">Features</a>
             <a href="#">Pricing</a>
             <a href="#">Enterprise</a>
             <a href="#">About</a>
             <a href="/login" className="text-gray-600">Log In</a>
-            <a href="/signup" className="bg-indigo-600 text-white text-center py-2 rounded-md">Get Started</a>
+            <a href="/signup" className="bg-indigo-500 text-white text-center py-2 rounded-md">Get Started</a>
           </div>
         )}
       </nav>
@@ -122,7 +124,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-3 flex-wrap">
             <a
               href="/signup"
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all hover:shadow-md"
+              className="bg-indigo-500 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-lg text-sm transition-all hover:shadow-md"
             >
               Get Started
             </a>
@@ -238,7 +240,7 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-5 py-14 grid grid-cols-2 md:grid-cols-4 gap-10">
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-3">
-              <Logo />
+              {/* <Logo /> */}
               <span className="font-bold text-indigo-600 text-base">MeetSync</span>
             </div>
             <p className="text-gray-400 text-xs leading-relaxed max-w-xs">
@@ -276,8 +278,8 @@ export default function LandingPage() {
             <p className="text-gray-400 text-xs">© 2024 MeetSync Inc. All rights reserved.</p>
             <div className="flex items-center gap-4 text-gray-400">
               <a href="#" className="hover:text-gray-600 transition-colors"><Globe size={16} /></a>
-              <a href="#" className="hover:text-gray-600 transition-colors"><Twitter size={16} /></a>
-              <a href="#" className="hover:text-gray-600 transition-colors"><Linkedin size={16} /></a>
+              {/* <a href="#" className="hover:text-gray-600 transition-colors"><Twitter size={16} /></a> */}
+              {/* <a href="#" className="hover:text-gray-600 transition-colors"><Linkedin size={16} /></a> */}
             </div>
           </div>
         </div>

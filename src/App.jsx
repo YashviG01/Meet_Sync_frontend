@@ -1,36 +1,15 @@
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-} from "react-router-dom";
-
-import Home from "./pages/LandingPage";
-import JoinMeeting from "./pages/JoinMeeting";
-import MeetingRoom from "./pages/MeetingRoom/MeetingRoom";
-
-function App() {
+import { Routes, Route } from "react-router-dom";
+import LandingPage from "./pages/LandingPage";
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
+const App = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-
-        <Route
-          path="/"
-          element={<Home />}
-        />
-
-        <Route
-          path="/join"
-          element={<JoinMeeting />}
-        />
-
-        <Route
-          path="/room/:roomId"
-          element={<MeetingRoom />}
-        />
-
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/login" element={<Login />} />
+    </Routes>
   );
-}
+};
 
 export default App;

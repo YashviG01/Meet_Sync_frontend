@@ -4,7 +4,7 @@ import {
   Route,
 } from "react-router-dom";
 
-import Home from "./pages/Home";
+import Home from "./pages/LandingPage";
 import JoinMeeting from "./pages/JoinMeeting";
 import MeetingRoom from "./pages/MeetingRoom/MeetingRoom";
 

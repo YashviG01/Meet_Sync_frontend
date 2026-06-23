@@ -5,6 +5,7 @@ import PasswordInput from "../../shared/components/PasswordInput";
 import Checkbox from "../../shared/components/Checkbox";
 import Button from "../../shared/components/Button";
 import AuthCard from "../../shared/components/AuthCard";
+import { Link } from "react-router-dom";
 
 const LoginForm = () => {
   const [remember, setRemember] = useState(false);
@@ -51,12 +52,12 @@ const LoginForm = () => {
         />
 
         <div className="flex justify-end">
-          <a
-            href="/forgot-password"
+          <Link
+            to="/forgotPassword"
             className="text-sm text-indigo-600 hover:text-indigo-700"
           >
             Forgot Password?
-          </a>
+          </Link>
         </div>
 
         <Checkbox

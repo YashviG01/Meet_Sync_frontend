@@ -6,10 +6,16 @@ import Checkbox from "../../shared/components/Checkbox";
 import Button from "../../shared/components/Button";
 import AuthCard from "../../shared/components/AuthCard";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+import useLogin from "../hooks/useLogin";
 
 const LoginForm = () => {
   const [remember, setRemember] = useState(false);
+  const navigate = useNavigate();
 
+  const { login, loading } =
+    useLogin();
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -21,6 +27,20 @@ const LoginForm = () => {
       [e.target.name]: e.target.value,
     });
   };
+
+const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const result =
+      await login(form);
+
+    if (result.success) {
+      navigate("/dashboard");
+    } else {
+      alert(result.message);
+    }
+  };
+
 
   return (
     <AuthCard>
@@ -34,7 +54,7 @@ const LoginForm = () => {
         </p>
       </div>
 
-      <div className="space-y-4">
+      <form Name="space-y-4" onSubmit={handleSubmit}>
         <Input
           label="Email Address"
           name="email"
@@ -66,10 +86,11 @@ const LoginForm = () => {
           label="Remember this device"
         />
 
-        <Button type="submit">
-          Sign In To MeetSync
-        </Button>
-      </div>
+        <Button type="submit " disabled={loading}>
+ {loading
+          ? "Logging In..."
+          : "Login"} </Button>
+      </form>
     </AuthCard>
   );
 };

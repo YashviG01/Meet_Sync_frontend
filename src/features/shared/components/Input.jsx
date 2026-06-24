@@ -1,3 +1,5 @@
+//to accept different types of values in the form.sort of defining the schemA
+
 const Input = ({
   label,
   type = "text",

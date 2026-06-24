@@ -4,29 +4,53 @@ import { getCurrentUser } from "../api/authApi";//api call
 
 import useAuthStore from "../auth/store/authStore";//zustand
 
-const useCurrentUser = () => {
-  const setUser = useAuthStore(
-    (state) => state.setUser
-  );//setting the data
+// to ensure :
+// App starts
+//  ↓
+// loading=true
+//  ↓
+// /me request
+//  ↓
+// User found?
+//  ↓
+// YES -> setUser
+// NO  -> clearUser
+//  ↓
+// loading=false
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const data =
-          await getCurrentUser();
+const useCurrentUser = () => {const setUser = useAuthStore(
+  (state) => state.setUser
+);
 
-        setUser(data.user);
+const clearUser = useAuthStore(
+  (state) => state.clearUser
+);
 
-      } catch (error) {
-        console.log(
-          "No authenticated user"
-        );
-        console.log(error.message);
-      }
-    };
+const setLoading = useAuthStore(
+  (state) => state.setLoading
+);
 
-    fetchUser();
-  }, [setUser]);
-};
+useEffect(() => {
+  const fetchUser = async () => {
+    try {
+      setLoading(true);
+
+      const data =
+        await getCurrentUser();
+
+      setUser(data.user);
+
+    } catch (error) {
+      clearUser();
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchUser();
+}, []);}
+
+
 
 export default useCurrentUser;

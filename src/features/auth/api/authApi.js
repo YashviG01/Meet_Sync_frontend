@@ -3,6 +3,7 @@
 //signup
 //login
 //logout
+//getcurrent user
 import api from "../../../services/api/client";
 
 export const signupUser = async (data) => {
@@ -30,3 +31,11 @@ export const logoutUser = async () => {
 
   return response.data;
 };
+
+export const getCurrentUser =
+  async () => {
+    const response =
+      await api.get("/auth/me");
+
+    return response.data;
+  };

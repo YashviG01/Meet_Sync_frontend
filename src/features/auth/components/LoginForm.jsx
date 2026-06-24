@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import {toast} from "sonner"
 import Input from "../../shared/components/Input";
 import PasswordInput from "../../shared/components/PasswordInput";
 import Checkbox from "../../shared/components/Checkbox";
@@ -37,7 +37,7 @@ const handleSubmit = async (e) => {
     if (result.success) {
       navigate("/dashboard");
     } else {
-      alert(result.message);
+      toast(result.message)
     }
   };
 
@@ -54,7 +54,7 @@ const handleSubmit = async (e) => {
         </p>
       </div>
 
-      <form Name="space-y-4" onSubmit={handleSubmit}>
+      <form name="space-y-4" onSubmit={handleSubmit}>
         <Input
           label="Email Address"
           name="email"

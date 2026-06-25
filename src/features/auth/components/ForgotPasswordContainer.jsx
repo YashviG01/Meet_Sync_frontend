@@ -1,19 +1,28 @@
 import { useState } from "react";
-
+import useForgotPassword
+from "../hooks/useForgotPassword";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import ForgotPasswordSuccess from "./ForgotPasswordSuccess";
 
 const ForgotPasswordContainer = () => {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+const {
+  sendResetLink,
+  loading,
+} = useForgotPassword();
+ const handleSubmit = async (
+  e
+) => {
+  e.preventDefault();
+console.log("send reset link clicked");
+  const result =
+    await sendResetLink(email);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (email) {
-      setSubmitted(true);
-    }
-  };
+  if (result.success) {
+    setSubmitted(true);
+  }
+};
 
   if (submitted) {
     return (
@@ -29,6 +38,9 @@ const ForgotPasswordContainer = () => {
       email={email}
       setEmail={setEmail}
       onSubmit={handleSubmit}
+ loading={loading}
+
+
     />
   );
 };

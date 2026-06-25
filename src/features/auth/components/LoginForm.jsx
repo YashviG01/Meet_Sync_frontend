@@ -73,7 +73,7 @@ const handleSubmit = async (e) => {
 
         <div className="flex justify-end">
           <Link
-            to="/forgotPassword"
+            to="/forgot-password"
             className="text-sm text-indigo-600 hover:text-indigo-700"
           >
             Forgot Password?

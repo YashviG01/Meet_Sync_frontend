@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
-
+import { useParams } from
+"react-router-dom";
 import AuthCard from "../../shared/components/AuthCard";
 import PasswordInput from "../../shared/components/PasswordInput";
 import Button from "../../shared/components/Button";
-
+  import { useNavigate } from "react-router-dom";
+import useResetPassword from "../hooks/useResetPassword"
 import PasswordStrengthMeter from "./PasswordStrengthMeter";
 import PasswordRules from "./PasswordRules";
 import { Link } from "react-router-dom";
@@ -14,6 +16,14 @@ const ResetPasswordForm = () => {
     password: "",
     confirmPassword: "",
   });
+const navigate = useNavigate();
+const {
+    updatePassword,
+    loading,
+  }=useResetPassword();
+
+  const { token } =
+  useParams();
 
   const handleChange = (e) => {
     setForm({
@@ -22,9 +32,28 @@ const ResetPasswordForm = () => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  };
+  const handleSubmit = async (
+  e
+) => {
+  e.preventDefault();
+console.log("new pwd forming")
+  if (
+    form.password !==
+    form.confirmPassword
+  ) {
+    return;
+  }
+
+  const result =
+    await updatePassword(
+      token,
+      form.password
+    );
+
+  if (result.success) {
+    navigate("/login");
+  }
+};
 
   return (
     <AuthCard>
@@ -76,9 +105,19 @@ const ResetPasswordForm = () => {
           password={form.password}
         />
 
-        <Button type="submit">
-          Reset Password
+     <Button  type="submit "
+        disabled={loading}>
+{loading
+      ? "resetting..."
+      : "Create New Password"}
+
+
+
         </Button>
+
+
+
+
       </form>
 
       <div className="text-center mt-5">

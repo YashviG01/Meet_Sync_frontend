@@ -9,7 +9,14 @@ const ForgotPasswordForm = ({
   email,
   setEmail,
   onSubmit,
+  loading
 }) => {
+
+
+
+
+
+
   return (
     <AuthCard>
       <div className="flex justify-center mb-6">
@@ -37,8 +44,14 @@ const ForgotPasswordForm = ({
           placeholder="name@company.com"
         />
 
-        <Button type="submit">
-          Send Reset Link
+        <Button  type="submit "
+        disabled={loading}>
+{loading
+      ? "Sending..."
+      : "Send Reset Link"}
+
+
+
         </Button>
       </form>
 

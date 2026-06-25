@@ -1,7 +1,7 @@
 import {
   getStrength,
   strengthConfig,
-} from "../utils/passwordStrength";
+} from "../../../utils/PasswordStrength"
 
 const barColors = [
   "bg-gray-200",

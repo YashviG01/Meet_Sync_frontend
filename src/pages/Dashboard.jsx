@@ -2,6 +2,13 @@ import { useState } from "react";
 import { CalendarPlus, Zap, LogIn } from "lucide-react";
 import Sidebar from "../features/dashboard/components/Sidebar";
 import DashboardHeader from "../features/dashboard/components/DashboardHeader";
+import { useNavigate } from "react-router-dom";
+
+import { toast } from "sonner";
+
+import  useStartInstantMeeting 
+from "../features/meetings/hooks/useStartInstantMeeting";
+
 // import StatsGrid from "../features/dashboard/components/StatsGrid";
 // import MeetingsTable from "../features/dashboard/components/MeetingTable"
 
@@ -93,11 +100,45 @@ import DashboardHeader from "../features/dashboard/components/DashboardHeader";
 
 export default function Dashboard({ onNavigate }) {
   const [activePage, setActivePage] = useState("dashboard");
+const navigate = useNavigate();
+
+const {
+    createMeeting,
+    loading
+} = useStartInstantMeeting();
+
 
   const handleNavigate = (key) => {
     setActivePage(key);
     if (onNavigate) onNavigate(key);
   };
+const handleStartInstant =
+async () => {
+
+    const result =
+    await createMeeting();
+
+    if(result.success){
+
+        toast.success(
+            "Meeting created!"
+        );
+console.log(result.meeting.roomId)
+        navigate(
+            `/meeting/${result.meeting.roomId}`
+        );
+
+    }
+
+    else{
+
+        toast.error(
+            result.message
+        );
+
+    }
+
+};
 
 //   const handleJoin = (id) => {
 //     console.log("Join meeting:", id);
@@ -155,7 +196,7 @@ export default function Dashboard({ onNavigate }) {
 
 {/* start meeting */}
               <button
-                onClick={() => handleNavigate("instant")}
+                onClick={handleStartInstant}  disabled={loading}
                 className="
                   flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500
                   hover:from-orange-600 hover:to-amber-600 text-white text-sm font-semibold
@@ -164,7 +205,23 @@ export default function Dashboard({ onNavigate }) {
                 "
               >
                 <Zap size={16} />
-                Start Instant
+              {
+loading
+?
+"Creating..."
+:
+"Start Instant"
+}
+
+
+
+
+
+
+
+
+
+
               </button>
 
 

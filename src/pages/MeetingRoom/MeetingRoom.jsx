@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import RemoteVideo from "../../../components/meeting/RemoteVideo";
 import socket from "../../../socket/socket";
+import useAuthStore from "../../features/auth/auth/store/authStore";
 
 const MeetingRoom = () => {
   const { roomId } = useParams();
@@ -41,10 +42,16 @@ const MeetingRoom = () => {
     setIsVideoOn(videoTrack.enabled);
   };
 
-  const currentUser = {
-    _id: "123",
-    name: "test",
-  };
+//fetch current user details from the zustand store
+  const currentUser =
+useAuthStore(
+(state)=>state.user
+);
+
+  // const currentUser = {
+  //   _id: "123",
+  //   name: "test",
+  // };
 
   //later fetch the details of the user when logs in ,store it and send its details in the sendmessage
   const sendMessage = () => {
@@ -249,8 +256,9 @@ const MeetingRoom = () => {
         socket.connect();
 
         socket.emit("join-room", {
-          roomId,
-          user: currentUser,
+          roomId:roomId,
+          user: currentUser.id,
+          name:currentUser.name
         });
       } catch (error) {
         console.error(error);
@@ -368,11 +376,25 @@ const MeetingRoom = () => {
         );
     }
 
+if (peer.signalingState !== "stable") {
+    console.log(
+        "Ignoring duplicate offer"
+    );
+    return;
+}
+
     await peer
       .setRemoteDescription(
         offer
       );
 
+      if (peer.signalingState !== "have-remote-offer") {
+    console.log(
+        "Unexpected signaling state:",
+        peer.signalingState
+    );
+    return;
+}
     const answer =
       await peer.createAnswer();
 
@@ -479,15 +501,20 @@ const MeetingRoom = () => {
 );
 
     socket.on("existing-participants", async (participants) => {
+
+
+
+
+
       for (const participant of participants) {
         console.log(peerConnections.current);
 
         const peer = createPeerConnection(participant.socketId);
 
         console.log("created peer for", participant.socketId);
-        localStreamRef.current.getTracks().forEach((track) => {
-          peer.addTrack(track, localStreamRef.current);
-        });
+        // localStreamRef.current.getTracks().forEach((track) => {
+        //   peer.addTrack(track, localStreamRef.current);
+        // });
         const offer = await peer.createOffer();
 
         await peer.setLocalDescription(offer);
@@ -511,13 +538,24 @@ const MeetingRoom = () => {
       socket.off("answer");
       socket.off("ice-candidate");
       socket.off("user-joined");
+Object.values(
+peerConnections.current
+).forEach(peer=>peer.close());
+
+peerConnections.current={};
+//turn off the camera,microphone if still in use
+if (localStreamRef.current) {
+  localStreamRef.current.getTracks().forEach(track => track.stop());
+}
 
       //close peer connection on unmount
       // if (peerRef.current) {
       //   peerRef.current.close();
       // }
 
-      socket.disconnect();
+       if (socket) {
+    socket.disconnect();
+  }
     };
   }, [roomId]);
 

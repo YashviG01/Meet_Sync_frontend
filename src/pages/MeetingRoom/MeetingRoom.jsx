@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import RemoteVideo from "../../../components/meeting/RemoteVideo";
 import socket from "../../../socket/socket";
 import useAuthStore from "../../features/auth/auth/store/authStore";
+import {createPeerConnection as createPeer} from "../../features/meetings/engine/peerConnection"
 
 const MeetingRoom = () => {
   const { roomId } = useParams();
@@ -174,52 +175,60 @@ useAuthStore(
   }
 };
 
-  const createPeerConnection = (targetSocketId) => {
-  if (peerConnections.current[targetSocketId]) {
-    return peerConnections.current[targetSocketId];
-  }
 
-  const peer = new RTCPeerConnection({
-    iceServers: [
-      {
-        urls: "stun:stun.l.google.com:19302",
-      },
-    ],
+const createPeerConnection = (targetSocketId) =>
+  createPeer(targetSocketId, {
+    peerConnections,
+    localStreamRef,
+    socket,
+    setRemoteStreams,
   });
+//   const createPeerConnection = (targetSocketId) => {
+//   if (peerConnections.current[targetSocketId]) {
+//     return peerConnections.current[targetSocketId];
+//   }
 
-  peerConnections.current[targetSocketId] = peer;
+//   const peer = new RTCPeerConnection({
+//     iceServers: [
+//       {
+//         urls: "stun:stun.l.google.com:19302",
+//       },
+//     ],
+//   });
 
-  localStreamRef.current?.getTracks().forEach((track) => {
-    peer.addTrack(track, localStreamRef.current);
-  });
+//   peerConnections.current[targetSocketId] = peer;
 
-  peer.ontrack = (event) => {
-    setRemoteStreams((prev) => ({
-      ...prev,
-      [targetSocketId]: event.streams[0],
-    }));
-  };
+//   localStreamRef.current?.getTracks().forEach((track) => {
+//     peer.addTrack(track, localStreamRef.current);
+//   });
 
-  peer.onicecandidate = (event) => {
-    if (event.candidate) {
-      socket.emit("ice-candidate", {
-        targetSocketId,
-        candidate: event.candidate,
-        senderSocketId: socket.id,
-      });
-    }
-  };
+//   peer.ontrack = (event) => {
+//     setRemoteStreams((prev) => ({
+//       ...prev,
+//       [targetSocketId]: event.streams[0],
+//     }));
+//   };
 
-  peer.onconnectionstatechange = () => {
-    console.log(
-      "CONNECTION:",
-      targetSocketId,
-      peer.connectionState
-    );
-  };
+//   peer.onicecandidate = (event) => {
+//     if (event.candidate) {
+//       socket.emit("ice-candidate", {
+//         targetSocketId,
+//         candidate: event.candidate,
+//         senderSocketId: socket.id,
+//       });
+//     }
+//   };
 
-  return peer;
-};
+//   peer.onconnectionstatechange = () => {
+//     console.log(
+//       "CONNECTION:",
+//       targetSocketId,
+//       peer.connectionState
+//     );
+//   };
+
+//   return peer;
+// };
 
   //order:
   //start video

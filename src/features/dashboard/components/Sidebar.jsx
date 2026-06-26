@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import useLogout from "../../auth/hooks/useLogout"
 import {
   LayoutDashboard, Video, CalendarPlus, LogIn, History,
   User, Settings, LogOut, ChevronLeft, ChevronRight, Zap,
@@ -22,8 +25,16 @@ const BOTTOM_ITEMS = [
 export default function Sidebar({ activePage = "dashboard", onNavigate }) {
   const [collapsed, setCollapsed] = useState(false);
 
-  const navigate = (key) => {
-    if (onNavigate) onNavigate(key);
+   const navigate = useNavigate();
+
+  const { logout } = useLogout();
+
+  const handleLogout = async () => {
+    const result = await logout();
+
+    if (result.success) {
+      navigate("/login");
+    }
   };
 
   return (
@@ -34,7 +45,6 @@ export default function Sidebar({ activePage = "dashboard", onNavigate }) {
         ${collapsed ? "w-16" : "w-56"}
       `}
     >
-      {/* ── Brand ──────────────────────────────────────────────── */}
       <div
         className={`
           flex items-center border-b border-gray-100 flex-shrink-0
@@ -49,7 +59,6 @@ export default function Sidebar({ activePage = "dashboard", onNavigate }) {
         )}
       </div>
 
-      {/* ── Nav ────────────────────────────────────────────────── */}
       <nav className={`flex-1 overflow-y-auto py-3 space-y-0.5 ${collapsed ? "px-2" : "px-2"}`}>
         {NAV_ITEMS.map((item) => (
           <SidebarItem
@@ -64,7 +73,7 @@ export default function Sidebar({ activePage = "dashboard", onNavigate }) {
       </nav>
 
       {/* ── Start Meeting CTA ───────────────────────────────────── */}
-      <div className={`px-2 pb-3 ${collapsed ? "" : ""}`}>
+      {/* <div className={`px-2 pb-3 ${collapsed ? "" : ""}`}>
         {collapsed ? (
           <button
             title="Start Instant Meeting"
@@ -82,7 +91,7 @@ export default function Sidebar({ activePage = "dashboard", onNavigate }) {
             Start Instant
           </button>
         )}
-      </div>
+      </div> */}
 
       {/* ── Bottom ─────────────────────────────────────────────── */}
       <div className={`border-t border-gray-100 py-3 space-y-0.5 ${collapsed ? "px-2" : "px-2"}`}>
@@ -101,9 +110,12 @@ export default function Sidebar({ activePage = "dashboard", onNavigate }) {
           label="Logout"
           collapsed={collapsed}
           danger
-          onClick={() => navigate("logout")}
+          onClick={handleLogout}
         />
       </div>
+
+
+
 
       {/* ── Collapse toggle ─────────────────────────────────────── */}
       <button

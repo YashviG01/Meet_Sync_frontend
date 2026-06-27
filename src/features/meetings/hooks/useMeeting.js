@@ -1,0 +1,125 @@
+// meeting/hooks/useMeeting.js
+
+import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
+import useAuthStore from "../../auth/auth/store/authStore";
+import { createMeetingEngine } from "../engine/meetingEngine";
+import socket from "../../../../socket/socket";
+
+/**
+ * Owns all meeting state, refs, and engine lifecycle.
+ * Returns everything MeetingRoom needs to render.
+ */
+const useMeeting = () => {
+  const { roomId } = useParams();
+
+  const currentUser = useAuthStore((state) => state.user);
+
+  // --- Chat state ---
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [typingUser, setTypingUser] = useState("");
+
+  // --- Participant state ---
+  const [users, setUsers] = useState([]);
+  const [participantCount, setParticipantCount] = useState(0);
+
+  // --- Media state ---
+  const [isMicOn, setIsMicOn] = useState(true);
+  const [isVideoOn, setIsVideoOn] = useState(true);
+  const [isScreenSharing, setIsScreenSharing] = useState(false);
+
+  // --- WebRTC state ---
+  const [remoteStreams, setRemoteStreams] = useState({});
+
+  // --- Refs ---
+  const localVideoRef = useRef(null);
+  const localStreamRef = useRef(null);
+  const screenStreamRef = useRef(null);
+  const peerConnections = useRef({});
+  const engineRef = useRef(null);
+
+  // --- Engine getter (lazy, created once) ---
+  const getEngine = () => {
+    if (!engineRef.current) {
+      engineRef.current = createMeetingEngine({
+        socket,
+        roomId,
+        currentUser,
+        peerConnections,
+        localStreamRef,
+        screenStreamRef,
+        localVideoRef,
+        setRemoteStreams,
+        setMessages,
+        setUsers,
+        setParticipantCount,
+        setTypingUser,
+        setIsMicOn,
+        setIsVideoOn,
+        setIsScreenSharing,
+      });
+    }
+    return engineRef.current;
+  };
+
+  // --- Effect 1: acquire media + join room ---
+  useEffect(() => {
+    getEngine().initialize().catch(console.error);
+  }, []);
+
+  // --- Effect 2: register socket events ---
+  useEffect(() => {
+    return getEngine().registerEvents();
+  }, [roomId]);
+
+  // --- Handlers exposed to MeetingRoom ---
+
+  const handleToggleMic = () => getEngine().handleToggleMic();
+
+  const handleToggleVideo = () => getEngine().handleToggleVideo();
+
+  const handleShareScreen = () => getEngine().handleShareScreen();
+
+  const handleSendMessage = () => {
+    getEngine().sendMessage(message);
+    setMessage("");
+  };
+
+  const handleTyping = (value) => {
+    setMessage(value);
+    getEngine().emitTyping();
+  };
+
+  return {
+    // Room
+    roomId,
+
+    // Refs (passed to JSX elements directly)
+    localVideoRef,
+
+    // Remote streams
+    remoteStreams,
+
+    // Media controls
+    isMicOn,
+    isVideoOn,
+    isScreenSharing,
+    handleToggleMic,
+    handleToggleVideo,
+    handleShareScreen,
+
+    // Participants
+    users,
+    participantCount,
+
+    // Chat
+    message,
+    messages,
+    typingUser,
+    handleSendMessage,
+    handleTyping,
+  };
+};
+
+export default useMeeting;

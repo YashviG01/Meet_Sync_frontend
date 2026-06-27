@@ -3,14 +3,15 @@ import { useParams } from "react-router-dom";
 import RemoteVideo from "../../../components/meeting/RemoteVideo";
 import socket from "../../../socket/socket";
 import useAuthStore from "../../features/auth/auth/store/authStore";
-import {createPeerConnection as createPeer} from "../../features/meetings/engine/peerConnection"
-import {
-  startVideo,
-  toggleMic,
-  toggleVideo,
-  shareScreen,
-} from "../../features/meetings/engine/media";
-import { registerSocketEvents } from "../../features/meetings/engine/socketEvents";
+import {createMeetingEngine} from "../../features/meetings/engine/meetingEngine"
+// import {createPeerConnection as createPeer} from "../../features/meetings/engine/peerConnection"
+// import {
+//   startVideo,
+//   toggleMic,
+//   toggleVideo,
+//   shareScreen,
+// } from "../../features/meetings/engine/media";
+// import { registerSocketEvents } from "../../features/meetings/engine/socketEvents";
 const MeetingRoom = () => {
   const { roomId } = useParams();
   const [message, setMessage] = useState("");
@@ -26,7 +27,7 @@ const MeetingRoom = () => {
   const [isMicOn, setIsMicOn] = useState(true);
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
-
+const engineRef = useRef(null);
   // const toggleMic = () => {
   //   const audioTrack = localStreamRef.current?.getAudioTracks()[0];
 
@@ -37,8 +38,8 @@ const MeetingRoom = () => {
   //   setIsMicOn(audioTrack.enabled);
   // };
 
-const handleToggleMic = () =>
-  toggleMic({ localStreamRef, setIsMicOn });
+// const handleToggleMic = () =>
+//   toggleMic({ localStreamRef, setIsMicOn });
   // const toggleVideo = () => {
   //   const videoTrack = localStreamRef.current?.getVideoTracks()[0];
 
@@ -51,36 +52,84 @@ const handleToggleMic = () =>
 
 //fetch current user details from the zustand store
   
-const handleToggleVideo = () =>
-  toggleVideo({ localStreamRef, setIsVideoOn });
-
-
-
+// const handleToggleVideo = () =>
+//   toggleVideo({ localStreamRef, setIsVideoOn });
 
 const currentUser =
 useAuthStore(
 (state)=>state.user
 );
+const getEngine = () => {
+  if (!engineRef.current) {
+    engineRef.current = createMeetingEngine({
+      socket,
+      roomId,
+      currentUser,
+      peerConnections,
+      localStreamRef,
+      screenStreamRef,
+      localVideoRef,
+      setRemoteStreams,
+      setMessages,
+      setUsers,
+      setParticipantCount,
+      setTypingUser,
+      setIsMicOn,
+      setIsVideoOn,
+      setIsScreenSharing,
+    });
+  }
+  return engineRef.current;
+};
+
+// Replace Effect 1 with:
+useEffect(() => {
+  getEngine().initialize().catch(console.error);
+}, []);
+
+// Replace Effect 2 with:
+useEffect(() => {
+  return getEngine().registerEvents();
+}, [roomId]);
+
+// Replace handleToggleMic with:
+const handleToggleMic = () => getEngine().handleToggleMic();
+
+// Replace handleToggleVideo with:
+const handleToggleVideo = () => getEngine().handleToggleVideo();
+
+// Replace handleShareScreen with:
+const handleShareScreen = () => getEngine().handleShareScreen();
+
+// Replace sendMessage with:
+const sendMessage = () => {
+  getEngine().sendMessage(message);
+  setMessage("");
+};
+
+
+
+
 
   
 
-  const sendMessage = () => {
-    if (!message.trim()) return;
+  // const sendMessage = () => {
+  //   if (!message.trim()) return;
 
-    socket.emit("send-message", {
-      roomId,
+  //   socket.emit("send-message", {
+  //     roomId,
 
-      senderId: currentUser._id,
+  //     senderId: currentUser._id,
 
-      senderName: currentUser.name,
+  //     senderName: currentUser.name,
 
-      message,
+  //     message,
 
-      timestamp: new Date().toISOString(),
-    });
+  //     timestamp: new Date().toISOString(),
+  //   });
 
-    setMessage("");
-  };
+  //   setMessage("");
+  // };
 
   //share-screen
 //  const shareScreen = async () => {
@@ -183,25 +232,25 @@ useAuthStore(
 //     console.error(error);
 //   }
 // };
-const handleShareScreen = () =>
-  shareScreen({
-    peerConnections,
-    localStreamRef,
-    screenStreamRef,
-    localVideoRef,
-    socket,
-    roomId,
-    currentUser,
-    setIsScreenSharing,
-  });
+// const handleShareScreen = () =>
+//   shareScreen({
+//     peerConnections,
+//     localStreamRef,
+//     screenStreamRef,
+//     localVideoRef,
+//     socket,
+//     roomId,
+//     currentUser,
+//     setIsScreenSharing,
+//   });
 
-const createPeerConnection = (targetSocketId) =>
-  createPeer(targetSocketId, {
-    peerConnections,
-    localStreamRef,
-    socket,
-    setRemoteStreams,
-  });
+// const createPeerConnection = (targetSocketId) =>
+//   createPeer(targetSocketId, {
+//     peerConnections,
+//     localStreamRef,
+//     socket,
+//     setRemoteStreams,
+//   });
 //   const createPeerConnection = (targetSocketId) => {
 //   if (peerConnections.current[targetSocketId]) {
 //     return peerConnections.current[targetSocketId];
@@ -313,40 +362,40 @@ const createPeerConnection = (targetSocketId) =>
   // }, []);
 
 
-useEffect(() => {
-  const init = async () => {
-    try {
-      await startVideo({
-        localStreamRef,
-        localVideoRef,
-        socket,
-        roomId,
-        currentUser,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
+// useEffect(() => {
+//   const init = async () => {
+//     try {
+//       await startVideo({
+//         localStreamRef,
+//         localVideoRef,
+//         socket,
+//         roomId,
+//         currentUser,
+//       });
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
 
-  init();
-}, []);
+//   init();
+// }, []);
 
-useEffect(() => {
-  const cleanup = registerSocketEvents({
-    socket,
-    roomId,
-    peerConnections,
-    localStreamRef,
-    createPeerConnection,
-    setRemoteStreams,
-    setMessages,
-    setUsers,
-    setParticipantCount,
-    setTypingUser,
-  });
+// useEffect(() => {
+//   const cleanup = registerSocketEvents({
+//     socket,
+//     roomId,
+//     peerConnections,
+//     localStreamRef,
+//     createPeerConnection,
+//     setRemoteStreams,
+//     setMessages,
+//     setUsers,
+//     setParticipantCount,
+//     setTypingUser,
+//   });
 
-  return cleanup;
-}, [roomId]);
+//   return cleanup;
+// }, [roomId]);
 
 
 
@@ -683,14 +732,10 @@ useEffect(() => {
 
       <input
         value={message}
-        onChange={(e) => {
-          setMessage(e.target.value);
-
-          socket.emit("typing", {
-            roomId,
-            userName: currentUser.name,
-          });
-        }}
+      onChange={(e) => {
+  setMessage(e.target.value);
+  getEngine().emitTyping();
+}}
       />
       <button onClick={sendMessage}>Send</button>
     </>

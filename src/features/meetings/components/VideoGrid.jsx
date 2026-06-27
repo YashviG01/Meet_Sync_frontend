@@ -1,33 +1,31 @@
+// meeting/components/VideoGrid.jsx
+
 import VideoTile from "./VideoTile";
 
-const VideoGrid = ({
-  localStream,
-  remoteStreams,
-  participants,
-}) => {
+/**
+ * Renders the local video tile + all remote video tiles.
+ *
+ * @param {Object}  props
+ * @param {Object}  props.localVideoRef     - Ref for local video element
+ * @param {Object}  props.remoteStreams     - { [socketId]: MediaStream }
+ */
+const VideoGrid = ({ localVideoRef, remoteStreams }) => {
   return (
-    <div className="grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3 auto-rows-[260px]">
-
-      {/* Local Video */}
-
+    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+      {/* Local tile */}
       <VideoTile
-        stream={localStream}
-        name="You"
-        isLocal
+        videoRef={localVideoRef}
+        label="You"
+        muted
       />
 
-      {/* Remote Videos */}
-
-      {participants.map((participant) => (
+      {/* Remote tiles */}
+      {Object.entries(remoteStreams).map(([socketId, stream]) => (
         <VideoTile
-          key={participant.socketId}
-          stream={
-            remoteStreams[participant.socketId]
-          }
-          name={participant.userName}
+          key={socketId}
+          stream={stream}
         />
       ))}
-
     </div>
   );
 };

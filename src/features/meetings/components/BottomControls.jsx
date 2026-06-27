@@ -1,88 +1,37 @@
-import {
-  Mic,
-  MicOff,
-  Video,
-  VideoOff,
-  MonitorUp,
-  MessageCircle,
-  Users,
-  PhoneOff,
-} from "lucide-react";
+// meeting/components/BottomControls.jsx
 
+/**
+ * Meeting room control bar — mic, camera, screen share.
+ *
+ * @param {Object}   props
+ * @param {boolean}  props.isMicOn
+ * @param {boolean}  props.isVideoOn
+ * @param {boolean}  props.isScreenSharing
+ * @param {Function} props.onToggleMic
+ * @param {Function} props.onToggleVideo
+ * @param {Function} props.onShareScreen
+ */
 const BottomControls = ({
-  micOn,
-  cameraOn,
-  toggleMic,
-  toggleCamera,
-  shareScreen,
-  toggleChat,
-  toggleParticipants,
-  leaveMeeting,
+  isMicOn,
+  isVideoOn,
+  isScreenSharing,
+  onToggleMic,
+  onToggleVideo,
+  onShareScreen,
 }) => {
-  const Button = ({
-    children,
-    onClick,
-    danger,
-  }) => (
-    <button
-      onClick={onClick}
-      className={`
-      w-12
-      h-12
-      rounded-full
-      flex
-      items-center
-      justify-center
-      transition
-      ${
-        danger
-          ? "bg-red-600 hover:bg-red-700"
-          : "bg-zinc-800 hover:bg-zinc-700"
-      }
-      `}
-    >
-      {children}
-    </button>
-  );
-
   return (
-    <div className="flex justify-center items-center gap-5">
+    <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+      <button onClick={onToggleMic}>
+        {isMicOn ? "Mute Mic" : "Unmute Mic"}
+      </button>
 
-      <Button onClick={toggleMic}>
-        {micOn ? (
-          <Mic />
-        ) : (
-          <MicOff />
-        )}
-      </Button>
+      <button onClick={onToggleVideo}>
+        {isVideoOn ? "Turn Camera Off" : "Turn Camera On"}
+      </button>
 
-      <Button onClick={toggleCamera}>
-        {cameraOn ? (
-          <Video />
-        ) : (
-          <VideoOff />
-        )}
-      </Button>
-
-      <Button onClick={shareScreen}>
-        <MonitorUp />
-      </Button>
-
-      <Button onClick={toggleChat}>
-        <MessageCircle />
-      </Button>
-
-      <Button onClick={toggleParticipants}>
-        <Users />
-      </Button>
-
-      <Button
-        danger
-        onClick={leaveMeeting}
-      >
-        <PhoneOff />
-      </Button>
-
+      <button onClick={onShareScreen}>
+        {isScreenSharing ? "Sharing Screen" : "Share Screen"}
+      </button>
     </div>
   );
 };

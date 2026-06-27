@@ -1,85 +1,97 @@
 // meeting/pages/MeetingRoom.jsx
 
-import RemoteVideo from "../../../components/meeting/RemoteVideo";
+// import RemoteVideo from "../../../components/meeting/RemoteVideo";
 import useMeeting from "../../features/meetings/hooks/useMeeting";
+import MeetingLayout from "../../features/meetings/components/MeetingLayout";
 
 const MeetingRoom = () => {
-  const {
-    roomId,
-    localVideoRef,
-    remoteStreams,
-    isMicOn,
-    isVideoOn,
-    isScreenSharing,
-    handleToggleMic,
-    handleToggleVideo,
-    handleShareScreen,
-    users,
-    participantCount,
-    message,
-    messages,
-    typingUser,
-    handleSendMessage,
-    handleTyping,
-  } = useMeeting();
+  const meetingProps = useMeeting();
 
-  return (
-    <>
-      <div>
-        <h1>Meeting Room</h1>
-        <h2>Room: {roomId}</h2>
-
-        <div>
-          {Object.entries(remoteStreams).map(([socketId, stream]) => (
-            <RemoteVideo key={socketId} stream={stream} />
-          ))}
-        </div>
-
-        <video ref={localVideoRef} autoPlay playsInline muted />
-
-        <button onClick={handleToggleMic}>
-          {isMicOn ? "Mute Mic" : "Unmute Mic"}
-        </button>
-
-        <button onClick={handleToggleVideo}>
-          {isVideoOn ? "Turn Camera Off" : "Turn Camera On"}
-        </button>
-
-        <button onClick={handleShareScreen}>
-          {isScreenSharing ? "Sharing Screen" : "Share Screen"}
-        </button>
-
-        <h3>Participants: {participantCount}</h3>
-      </div>
-
-      <div>
-        <h3>Participants</h3>
-
-        {users.map((user) => (
-          <div key={user.socketId}>{user.userName}</div>
-        ))}
-
-        {messages.map((msg, index) => (
-          <div key={index}>
-            <strong>{msg.senderName}</strong>
-            <p>{msg.message}</p>
-            <small>{new Date(msg.timestamp).toLocaleTimeString()}</small>
-          </div>
-        ))}
-
-        {typingUser && <p>{typingUser} is typing...</p>}
-      </div>
-
-      <input
-        value={message}
-        onChange={(e) => handleTyping(e.target.value)}
-      />
-      <button onClick={handleSendMessage}>Send</button>
-    </>
-  );
+  return <MeetingLayout {...meetingProps} />;
 };
 
 export default MeetingRoom;
+
+
+
+
+// const MeetingRoom = () => {
+//   const {
+//     roomId,
+//     localVideoRef,
+//     remoteStreams,
+//     isMicOn,
+//     isVideoOn,
+//     isScreenSharing,
+//     handleToggleMic,
+//     handleToggleVideo,
+//     handleShareScreen,
+//     users,
+//     participantCount,
+//     message,
+//     messages,
+//     typingUser,
+//     handleSendMessage,
+//     handleTyping,
+//   } = useMeeting();
+
+//   return (
+//     <>
+//       <div>
+//         <h1>Meeting Room</h1>
+//         <h2>Room: {roomId}</h2>
+
+//         <div>
+//           {Object.entries(remoteStreams).map(([socketId, stream]) => (
+//             <RemoteVideo key={socketId} stream={stream} />
+//           ))}
+//         </div>
+
+//         <video ref={localVideoRef} autoPlay playsInline muted />
+
+//         <button onClick={handleToggleMic}>
+//           {isMicOn ? "Mute Mic" : "Unmute Mic"}
+//         </button>
+
+//         <button onClick={handleToggleVideo}>
+//           {isVideoOn ? "Turn Camera Off" : "Turn Camera On"}
+//         </button>
+
+//         <button onClick={handleShareScreen}>
+//           {isScreenSharing ? "Sharing Screen" : "Share Screen"}
+//         </button>
+
+//         <h3>Participants: {participantCount}</h3>
+//       </div>
+
+//       <div>
+//         <h3>Participants</h3>
+
+//         {users.map((user) => (
+//           <div key={user.socketId}>{user.userName}</div>
+//         ))}
+
+//         {messages.map((msg, index) => (
+//           <div key={index}>
+//             <strong>{msg.senderName}</strong>
+//             <p>{msg.message}</p>
+//             <small>{new Date(msg.timestamp).toLocaleTimeString()}</small>
+//           </div>
+//         ))}
+
+//         {typingUser && <p>{typingUser} is typing...</p>}
+//       </div>
+
+//       <input
+//         value={message}
+//         onChange={(e) => handleTyping(e.target.value)}
+//       />
+//       <button onClick={handleSendMessage}>Send</button>
+//     </>
+//   );
+// };
+
+// export default MeetingRoom;
 
 
 

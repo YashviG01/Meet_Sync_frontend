@@ -1,73 +1,47 @@
+// meeting/components/VideoTile.jsx
+
 import { useEffect, useRef } from "react";
-import {
-  Mic,
-  MicOff,
-  Video,
-  VideoOff,
-} from "lucide-react";
 
-const VideoTile = ({
-  stream,
-  name,
-  isLocal = false,
-  micOn = true,
-  videoOn = true,
-}) => {
-  const videoRef = useRef(null);
+/**
+ * Renders a single video tile.
+ * Accepts either a MediaStream (remote) or a ref (local).
+ *
+ * @param {Object}  props
+ * @param {MediaStream} [props.stream]      - Remote stream (passed directly)
+ * @param {Object}  [props.videoRef]        - Ref for local video element
+ * @param {string}  [props.label]           - Participant name shown on tile
+ * @param {boolean} [props.muted]           - Mute the audio (local tile)
+ */
+const VideoTile = ({ stream, videoRef, label, muted = false }) => {
+  const internalRef = useRef(null);
+  const ref = videoRef || internalRef;
 
+  // Attach remote stream to video element when stream prop is provided
   useEffect(() => {
-    if (videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
+    if (stream && ref.current) {
+      ref.current.srcObject = stream;
     }
   }, [stream]);
 
   return (
-    <div className="relative rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 shadow-lg">
-
-      {stream ? (
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted={isLocal}
-          className="w-full h-full object-cover"
-        />
-      ) : (
-        <div className="h-full flex items-center justify-center text-zinc-500">
-          No Video
-        </div>
-      )}
-
-      <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between bg-gradient-to-t from-black/80 to-transparent px-4 py-3">
-
-        <span className="font-medium">
-          {name}
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <video ref={ref} autoPlay playsInline muted={muted} />
+      {label && (
+        <span
+          style={{
+            position: "absolute",
+            bottom: 4,
+            left: 4,
+            color: "white",
+            fontSize: 12,
+            background: "rgba(0,0,0,0.5)",
+            padding: "2px 6px",
+            borderRadius: 4,
+          }}
+        >
+          {label}
         </span>
-
-        <div className="flex gap-2">
-
-          {micOn ? (
-            <Mic size={18} />
-          ) : (
-            <MicOff
-              size={18}
-              className="text-red-500"
-            />
-          )}
-
-          {videoOn ? (
-            <Video size={18} />
-          ) : (
-            <VideoOff
-              size={18}
-              className="text-red-500"
-            />
-          )}
-
-        </div>
-
-      </div>
-
+      )}
     </div>
   );
 };

@@ -1,35 +1,70 @@
+// meeting/components/MeetingLayout.jsx
+
+import VideoGrid from "./VideoGrid";
+import BottomControls from "./BottomControls";
+import ParticipantsSidebar from "./ParticipantsSidebar";
+import ChatSidebar from "./ChatSidebar";
+
+/**
+ * Top-level layout shell for the meeting room.
+ * Composes all panels — video grid, controls, participants, chat.
+ * Receives all data and handlers as props from MeetingRoom via useMeeting.
+ */
 const MeetingLayout = ({
-  header,
-  videoGrid,
-  controls,
-  sidebar,
+  roomId,
+  localVideoRef,
+  remoteStreams,
+  isMicOn,
+  isVideoOn,
+  isScreenSharing,
+  handleToggleMic,
+  handleToggleVideo,
+  handleShareScreen,
+  participantCount,
+  users,
+  messages,
+  typingUser,
+  message,
+  handleTyping,
+  handleSendMessage,
 }) => {
   return (
-    <div className="h-screen bg-zinc-950 text-white flex flex-col">
+    <div style={{ display: "flex", gap: 16 }}>
+      {/* Left: video + controls */}
+      <div style={{ flex: 1 }}>
+        <h1>Meeting Room</h1>
+        <h2>Room: {roomId}</h2>
 
-      {/* Header */}
-      {header}
+        <VideoGrid
+          localVideoRef={localVideoRef}
+          remoteStreams={remoteStreams}
+        />
 
-      {/* Body */}
-      <div className="flex-1 flex overflow-hidden">
-
-        <div className="flex-1 p-5 overflow-y-auto">
-          {videoGrid}
-        </div>
-
-        {sidebar && (
-          <div className="w-80 border-l border-zinc-800 bg-zinc-900">
-            {sidebar}
-          </div>
-        )}
+        <BottomControls
+          isMicOn={isMicOn}
+          isVideoOn={isVideoOn}
+          isScreenSharing={isScreenSharing}
+          onToggleMic={handleToggleMic}
+          onToggleVideo={handleToggleVideo}
+          onShareScreen={handleShareScreen}
+        />
       </div>
 
-      {/* Bottom Controls */}
+      {/* Right: participants + chat */}
+      <div style={{ width: 280 }}>
+        <ParticipantsSidebar
+          participantCount={participantCount}
+          users={users}
+        />
 
-      <div className="border-t border-zinc-800 bg-zinc-950 px-6 py-4">
-        {controls}
+        <ChatSidebar
+          messages={messages}
+          typingUser={typingUser}
+          message={message}
+          onTyping={handleTyping}
+          onSendMessage={handleSendMessage}
+        />
       </div>
-
     </div>
   );
 };

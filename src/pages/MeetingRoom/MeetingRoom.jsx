@@ -4,7 +4,13 @@ import RemoteVideo from "../../../components/meeting/RemoteVideo";
 import socket from "../../../socket/socket";
 import useAuthStore from "../../features/auth/auth/store/authStore";
 import {createPeerConnection as createPeer} from "../../features/meetings/engine/peerConnection"
-
+import {
+  startVideo,
+  toggleMic,
+  toggleVideo,
+  shareScreen,
+} from "../../features/meetings/engine/media";
+import { registerSocketEvents } from "../../features/meetings/engine/socketEvents";
 const MeetingRoom = () => {
   const { roomId } = useParams();
   const [message, setMessage] = useState("");
@@ -13,48 +19,51 @@ const MeetingRoom = () => {
   const [participantCount, setParticipantCount] = useState(0);
   const [typingUser, setTypingUser] = useState("");
   const localVideoRef = useRef(null);
-  // const remoteVideoRef = useRef(null);
   const localStreamRef = useRef(null);
   const screenStreamRef = useRef(null);
   const [remoteStreams, setRemoteStreams] = useState({});
-  // const peerRef = useRef(null);
   const peerConnections = useRef({});
   const [isMicOn, setIsMicOn] = useState(true);
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
 
-  const toggleMic = () => {
-    const audioTrack = localStreamRef.current?.getAudioTracks()[0];
+  // const toggleMic = () => {
+  //   const audioTrack = localStreamRef.current?.getAudioTracks()[0];
 
-    if (!audioTrack) return;
+  //   if (!audioTrack) return;
 
-    audioTrack.enabled = !audioTrack.enabled;
+  //   audioTrack.enabled = !audioTrack.enabled;
 
-    setIsMicOn(audioTrack.enabled);
-  };
+  //   setIsMicOn(audioTrack.enabled);
+  // };
 
-  const toggleVideo = () => {
-    const videoTrack = localStreamRef.current?.getVideoTracks()[0];
+const handleToggleMic = () =>
+  toggleMic({ localStreamRef, setIsMicOn });
+  // const toggleVideo = () => {
+  //   const videoTrack = localStreamRef.current?.getVideoTracks()[0];
 
-    if (!videoTrack) return;
+  //   if (!videoTrack) return;
 
-    videoTrack.enabled = !videoTrack.enabled;
+  //   videoTrack.enabled = !videoTrack.enabled;
 
-    setIsVideoOn(videoTrack.enabled);
-  };
+  //   setIsVideoOn(videoTrack.enabled);
+  // };
 
 //fetch current user details from the zustand store
-  const currentUser =
+  
+const handleToggleVideo = () =>
+  toggleVideo({ localStreamRef, setIsVideoOn });
+
+
+
+
+const currentUser =
 useAuthStore(
 (state)=>state.user
 );
 
-  // const currentUser = {
-  //   _id: "123",
-  //   name: "test",
-  // };
+  
 
-  //later fetch the details of the user when logs in ,store it and send its details in the sendmessage
   const sendMessage = () => {
     if (!message.trim()) return;
 
@@ -74,107 +83,117 @@ useAuthStore(
   };
 
   //share-screen
- const shareScreen = async () => {
-  try {
-    const screenStream =
-      await navigator.mediaDevices.getDisplayMedia({
-        video: true,
-      });
+//  const shareScreen = async () => {
+//   try {
+//     const screenStream =
+//       await navigator.mediaDevices.getDisplayMedia({
+//         video: true,
+//       });
 
-    screenStreamRef.current =
-      screenStream;
+//     screenStreamRef.current =
+//       screenStream;
 
-    const screenTrack =
-      screenStream.getVideoTracks()[0];
+//     const screenTrack =
+//       screenStream.getVideoTracks()[0];
 
-    // Replace camera with screen
-    Object.values(
-      peerConnections.current
-    ).forEach(async (peer) => {
-      const sender =
-        peer.getSenders().find(
-          (sender) =>
-            sender.track &&
-            sender.track.kind ===
-              "video"
-        );
+//     // Replace camera with screen
+//     Object.values(
+//       peerConnections.current
+//     ).forEach(async (peer) => {
+//       const sender =
+//         peer.getSenders().find(
+//           (sender) =>
+//             sender.track &&
+//             sender.track.kind ===
+//               "video"
+//         );
 
-      if (sender) {
-        await sender.replaceTrack(
-          screenTrack
-        );
-      }
-    });
+//       if (sender) {
+//         await sender.replaceTrack(
+//           screenTrack
+//         );
+//       }
+//     });
 
-    if (localVideoRef.current) {
-      localVideoRef.current.srcObject =
-        screenStream;
-    }
+//     if (localVideoRef.current) {
+//       localVideoRef.current.srcObject =
+//         screenStream;
+//     }
 
-    socket.emit(
-      "screen-share-status",
-      {
-        roomId,
-        userName:
-          currentUser.name,
-        isSharing: true,
-      }
-    );
+//     socket.emit(
+//       "screen-share-status",
+//       {
+//         roomId,
+//         userName:
+//           currentUser.name,
+//         isSharing: true,
+//       }
+//     );
 
-    setIsScreenSharing(true);
+//     setIsScreenSharing(true);
 
-    // User clicks "Stop sharing"
-    screenTrack.onended =
-      async () => {
-        const cameraTrack =
-          localStreamRef.current
-            ?.getVideoTracks()[0];
+//     // User clicks "Stop sharing"
+//     screenTrack.onended =
+//       async () => {
+//         const cameraTrack =
+//           localStreamRef.current
+//             ?.getVideoTracks()[0];
 
-        Object.values(
-          peerConnections.current
-        ).forEach(async (peer) => {
-          const sender =
-            peer.getSenders().find(
-              (sender) =>
-                sender.track &&
-                sender.track.kind ===
-                  "video"
-            );
+//         Object.values(
+//           peerConnections.current
+//         ).forEach(async (peer) => {
+//           const sender =
+//             peer.getSenders().find(
+//               (sender) =>
+//                 sender.track &&
+//                 sender.track.kind ===
+//                   "video"
+//             );
 
-          if (
-            sender &&
-            cameraTrack
-          ) {
-            await sender.replaceTrack(
-              cameraTrack
-            );
-          }
-        });
+//           if (
+//             sender &&
+//             cameraTrack
+//           ) {
+//             await sender.replaceTrack(
+//               cameraTrack
+//             );
+//           }
+//         });
 
-        if (
-          localVideoRef.current
-        ) {
-          localVideoRef.current.srcObject =
-            localStreamRef.current;
-        }
+//         if (
+//           localVideoRef.current
+//         ) {
+//           localVideoRef.current.srcObject =
+//             localStreamRef.current;
+//         }
 
-        socket.emit(
-          "screen-share-status",
-          {
-            roomId,
-            userName:
-              currentUser.name,
-            isSharing: false,
-          }
-        );
+//         socket.emit(
+//           "screen-share-status",
+//           {
+//             roomId,
+//             userName:
+//               currentUser.name,
+//             isSharing: false,
+//           }
+//         );
 
-        setIsScreenSharing(false);
-      };
-  } catch (error) {
-    console.error(error);
-  }
-};
-
+//         setIsScreenSharing(false);
+//       };
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
+const handleShareScreen = () =>
+  shareScreen({
+    peerConnections,
+    localStreamRef,
+    screenStreamRef,
+    localVideoRef,
+    socket,
+    roomId,
+    currentUser,
+    setIsScreenSharing,
+  });
 
 const createPeerConnection = (targetSocketId) =>
   createPeer(targetSocketId, {
@@ -238,335 +257,375 @@ const createPeerConnection = (targetSocketId) =>
   //attach to local video
   //add tracks to peer connection
 
-  useEffect(() => {
-    const startVideo = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true,
-        });
+  // useEffect(() => {
+  //   const startVideo = async () => {
+  //     try {
+  //       const stream = await navigator.mediaDevices.getUserMedia({
+  //         video: true,
+  //         audio: true,
+  //       });
 
-        console.log(stream.getAudioTracks());
-        console.log(stream.getAudioTracks()[0]?.enabled);
-        console.log(stream.getAudioTracks()[0]?.readyState);
+  //       console.log(stream.getAudioTracks());
+  //       console.log(stream.getAudioTracks()[0]?.enabled);
+  //       console.log(stream.getAudioTracks()[0]?.readyState);
 
-        //used for peer conections.stored ina ref
-        localStreamRef.current = stream;
+  //       //used for peer conections.stored ina ref
+  //       localStreamRef.current = stream;
 
-        if (localVideoRef.current) {
-          localVideoRef.current.srcObject = stream;
-        }
+  //       if (localVideoRef.current) {
+  //         localVideoRef.current.srcObject = stream;
+  //       }
 
-        //        stream.getTracks().forEach((track) => {
-        //   peerRef.current.addTrack(track, stream);
-        // });
+  //       //        stream.getTracks().forEach((track) => {
+  //       //   peerRef.current.addTrack(track, stream);
+  //       // });
 
-        // Join room only after media tracks are ready
-        socket.connect();
+  //       // Join room only after media tracks are ready
+  //       socket.connect();
 
-        socket.emit("join-room", {
-          roomId:roomId,
-          user: currentUser.id,
-          name:currentUser.name
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  //       socket.emit("join-room", {
+  //         roomId:roomId,
+  //         user: currentUser.id,
+  //         name:currentUser.name
+  //       });
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
 
-    // peerRef.current = new RTCPeerConnection({
-    //   iceServers: [
-    //     {
-    //       urls: "stun:stun.l.google.com:19302",
-    //     },
-    //   ],
-    // });
+  //   // peerRef.current = new RTCPeerConnection({
+  //   //   iceServers: [
+  //   //     {
+  //   //       urls: "stun:stun.l.google.com:19302",
+  //   //     },
+  //   //   ],
+  //   // });
 
-    // peerRef.current.onconnectionstatechange = () => {
-    //   console.log("CONNECTION:", peerRef.current.connectionState);
-    // };
+  //   // peerRef.current.onconnectionstatechange = () => {
+  //   //   console.log("CONNECTION:", peerRef.current.connectionState);
+  //   // };
 
-    // peerRef.current.oniceconnectionstatechange = () => {
-    //   console.log("ICE:", peerRef.current.iceConnectionState);
-    // };
+  //   // peerRef.current.oniceconnectionstatechange = () => {
+  //   //   console.log("ICE:", peerRef.current.iceConnectionState);
+  //   // };
 
-    startVideo();
-  }, []);
+  //   startVideo();
+  // }, []);
 
-  useEffect(() => {
-    // socket.connect();
 
-    // socket.emit("join-room", { roomId, user: currentUser });
-    socket.on("user-typing", (userName) => {
-      setTypingUser(userName);
-
-      setTimeout(() => {
-        setTypingUser("");
-      }, 1000);
-    });
-
-    socket.on("participant-count", (count) => {
-      setParticipantCount(count);
-    });
-    socket.on("room-users", (users) => {
-      setUsers(users);
-    });
-
-    socket.on("receive-message", (data) => {
-      console.log("frontend received ", data);
-      setMessages((prev) => [...prev, data]);
-    });
-
-    //A creating and sending offer when the other user joins
-    //  socket.on("user-joined", async () => {
-    // console.log(
-    //   "creating offer",
-    //   peerRef.current.signalingState,
-    //   peerRef.current.connectionState
-    // );
-
-    // console.log(
-    //   "SENDERS:",
-    //   peerRef.current.getSenders()
-    // );
-
-    // const offer = await peerRef.current.createOffer();
-
-    //     await peerRef.current.setLocalDescription(offer);
-
-    //     socket.emit("offer", {
-    //       roomId,
-    //       offer,
-    //       sender: socket.id,
-    //     });
-    //   });
-
-    socket.on("participant-joined", async ({ socketId }) => {
-      console.log("participant joined", socketId);
-      const peer = createPeerConnection(socketId);
-
-      const offer = await peer.createOffer();
-
-      await peer.setLocalDescription(offer);
-
-      socket.emit("offer", {
-        targetSocketId: socketId,
-        offer,
-        senderSocketId: socket.id,
-      });
-      // const offer = await peerRef.current.createOffer();
-
-      // await peerRef.current.setLocalDescription(offer);
-
-      // socket.emit("offer", {
-      //   roomId,
-      //   offer,
-      //   sender: socket.id,
-      // });
-    });
-
-    //receive the offer from A,create answer and send back
-    socket.on(
-  "offer",
-  async ({
-    offer,
-    senderSocketId,
-  }) => {
-
-    let peer =
-      peerConnections.current[
-        senderSocketId
-      ];
-
-    if (!peer) {
-      peer =
-        createPeerConnection(
-          senderSocketId
-        );
-    }
-
-if (peer.signalingState !== "stable") {
-    console.log(
-        "Ignoring duplicate offer"
-    );
-    return;
-}
-
-    await peer
-      .setRemoteDescription(
-        offer
-      );
-
-      if (peer.signalingState !== "have-remote-offer") {
-    console.log(
-        "Unexpected signaling state:",
-        peer.signalingState
-    );
-    return;
-}
-    const answer =
-      await peer.createAnswer();
-
-    await peer
-      .setLocalDescription(
-        answer
-      );
-
-    socket.emit("answer", {
-      targetSocketId:
-        senderSocketId,
-      answer,
-      senderSocketId:
-        socket.id,
-    });
-  }
-);
-
-    //A receives the anser from B.handshake complete
-   socket.on(
-  "answer",
-  async ({
-    answer,
-    senderSocketId,
-  }) => {
-
-    const peer =
-      peerConnections.current[
-        senderSocketId
-      ];
-
-    if (!peer) return;
-
-    await peer
-      .setRemoteDescription(
-        answer
-      );
-
-  }
-);
-    //receive the ice candidates
-    socket.on(
-  "ice-candidate",
-  async ({
-    candidate,
-    senderSocketId,
-  }) => {
-
-    const peer =
-      peerConnections.current[
-        senderSocketId
-      ];
-
-    if (!peer) return;
-
+useEffect(() => {
+  const init = async () => {
     try {
-      await peer.addIceCandidate(
-        candidate
-      );
-    } catch (err) {
-      console.error(err);
+      await startVideo({
+        localStreamRef,
+        localVideoRef,
+        socket,
+        roomId,
+        currentUser,
+      });
+    } catch (error) {
+      console.error(error);
     }
+  };
 
-  }
-);
+  init();
+}, []);
 
-    //screen share
+useEffect(() => {
+  const cleanup = registerSocketEvents({
+    socket,
+    roomId,
+    peerConnections,
+    localStreamRef,
+    createPeerConnection,
+    setRemoteStreams,
+    setMessages,
+    setUsers,
+    setParticipantCount,
+    setTypingUser,
+  });
 
-    socket.on("screen-share-status", ({ isSharing, userName }) => {
-      console.log("SCREEN SHARE EVENT RECEIVED");
-
-      console.log(
-        `${userName} ${isSharing ? "started" : "stopped"} screen sharing`,
-      );
-    });
-
-    //to make sure last frame does not remain oncet the user leaves
-    socket.on(
-  "user-left",
-  ({ socketId }) => {
-
-    setRemoteStreams((prev) => {
-      const updated = { ...prev };
-
-      delete updated[socketId];
-
-      return updated;
-    });
-
-    if (
-      peerConnections.current[
-        socketId
-      ]
-    ) {
-      peerConnections.current[
-        socketId
-      ].close();
-
-      delete peerConnections.current[
-        socketId
-      ];
-    }
-  }
-);
-
-    socket.on("existing-participants", async (participants) => {
+  return cleanup;
+}, [roomId]);
 
 
 
 
 
-      for (const participant of participants) {
-        console.log(peerConnections.current);
+//   useEffect(() => {
+//     // socket.connect();
 
-        const peer = createPeerConnection(participant.socketId);
+//     // socket.emit("join-room", { roomId, user: currentUser });
+//     socket.on("user-typing", (userName) => {
+//       setTypingUser(userName);
 
-        console.log("created peer for", participant.socketId);
-        // localStreamRef.current.getTracks().forEach((track) => {
-        //   peer.addTrack(track, localStreamRef.current);
-        // });
-        const offer = await peer.createOffer();
+//       setTimeout(() => {
+//         setTypingUser("");
+//       }, 1000);
+//     });
 
-        await peer.setLocalDescription(offer);
+//     socket.on("participant-count", (count) => {
+//       setParticipantCount(count);
+//     });
+//     socket.on("room-users", (users) => {
+//       setUsers(users);
+//     });
 
-        socket.emit("offer", {
-          targetSocketId: participant.socketId,
+//     socket.on("receive-message", (data) => {
+//       console.log("frontend received ", data);
+//       setMessages((prev) => [...prev, data]);
+//     });
 
-          offer,
+//     //A creating and sending offer when the other user joins
+//     //  socket.on("user-joined", async () => {
+//     // console.log(
+//     //   "creating offer",
+//     //   peerRef.current.signalingState,
+//     //   peerRef.current.connectionState
+//     // );
 
-          senderSocketId: socket.id,
-        });
-      }
-    });
+//     // console.log(
+//     //   "SENDERS:",
+//     //   peerRef.current.getSenders()
+//     // );
 
-    return () => {
-      socket.off("participant-count");
-      socket.off("receive-message");
-      socket.off("room-users");
-      socket.off("user-typing");
-      socket.off("offer");
-      socket.off("answer");
-      socket.off("ice-candidate");
-      socket.off("user-joined");
-Object.values(
-peerConnections.current
-).forEach(peer=>peer.close());
+//     // const offer = await peerRef.current.createOffer();
 
-peerConnections.current={};
-//turn off the camera,microphone if still in use
-if (localStreamRef.current) {
-  localStreamRef.current.getTracks().forEach(track => track.stop());
-}
+//     //     await peerRef.current.setLocalDescription(offer);
 
-      //close peer connection on unmount
-      // if (peerRef.current) {
-      //   peerRef.current.close();
-      // }
+//     //     socket.emit("offer", {
+//     //       roomId,
+//     //       offer,
+//     //       sender: socket.id,
+//     //     });
+//     //   });
 
-       if (socket) {
-    socket.disconnect();
-  }
-    };
-  }, [roomId]);
+//     socket.on("participant-joined", async ({ socketId }) => {
+//       console.log("participant joined", socketId);
+//       const peer = createPeerConnection(socketId);
+
+//       const offer = await peer.createOffer();
+
+//       await peer.setLocalDescription(offer);
+
+//       socket.emit("offer", {
+//         targetSocketId: socketId,
+//         offer,
+//         senderSocketId: socket.id,
+//       });
+//       // const offer = await peerRef.current.createOffer();
+
+//       // await peerRef.current.setLocalDescription(offer);
+
+//       // socket.emit("offer", {
+//       //   roomId,
+//       //   offer,
+//       //   sender: socket.id,
+//       // });
+//     });
+
+//     //receive the offer from A,create answer and send back
+//     socket.on(
+//   "offer",
+//   async ({
+//     offer,
+//     senderSocketId,
+//   }) => {
+
+//     let peer =
+//       peerConnections.current[
+//         senderSocketId
+//       ];
+
+//     if (!peer) {
+//       peer =
+//         createPeerConnection(
+//           senderSocketId
+//         );
+//     }
+
+// if (peer.signalingState !== "stable") {
+//     console.log(
+//         "Ignoring duplicate offer"
+//     );
+//     return;
+// }
+
+//     await peer
+//       .setRemoteDescription(
+//         offer
+//       );
+
+//       if (peer.signalingState !== "have-remote-offer") {
+//     console.log(
+//         "Unexpected signaling state:",
+//         peer.signalingState
+//     );
+//     return;
+// }
+//     const answer =
+//       await peer.createAnswer();
+
+//     await peer
+//       .setLocalDescription(
+//         answer
+//       );
+
+//     socket.emit("answer", {
+//       targetSocketId:
+//         senderSocketId,
+//       answer,
+//       senderSocketId:
+//         socket.id,
+//     });
+//   }
+// );
+
+//     //A receives the anser from B.handshake complete
+//    socket.on(
+//   "answer",
+//   async ({
+//     answer,
+//     senderSocketId,
+//   }) => {
+
+//     const peer =
+//       peerConnections.current[
+//         senderSocketId
+//       ];
+
+//     if (!peer) return;
+
+//     await peer
+//       .setRemoteDescription(
+//         answer
+//       );
+
+//   }
+// );
+//     //receive the ice candidates
+//     socket.on(
+//   "ice-candidate",
+//   async ({
+//     candidate,
+//     senderSocketId,
+//   }) => {
+
+//     const peer =
+//       peerConnections.current[
+//         senderSocketId
+//       ];
+
+//     if (!peer) return;
+
+//     try {
+//       await peer.addIceCandidate(
+//         candidate
+//       );
+//     } catch (err) {
+//       console.error(err);
+//     }
+
+//   }
+// );
+
+//     //screen share
+
+//     socket.on("screen-share-status", ({ isSharing, userName }) => {
+//       console.log("SCREEN SHARE EVENT RECEIVED");
+
+//       console.log(
+//         `${userName} ${isSharing ? "started" : "stopped"} screen sharing`,
+//       );
+//     });
+
+//     //to make sure last frame does not remain oncet the user leaves
+//     socket.on(
+//   "user-left",
+//   ({ socketId }) => {
+
+//     setRemoteStreams((prev) => {
+//       const updated = { ...prev };
+
+//       delete updated[socketId];
+
+//       return updated;
+//     });
+
+//     if (
+//       peerConnections.current[
+//         socketId
+//       ]
+//     ) {
+//       peerConnections.current[
+//         socketId
+//       ].close();
+
+//       delete peerConnections.current[
+//         socketId
+//       ];
+//     }
+//   }
+// );
+
+//     socket.on("existing-participants", async (participants) => {
+
+
+
+
+
+//       for (const participant of participants) {
+//         console.log(peerConnections.current);
+
+//         const peer = createPeerConnection(participant.socketId);
+
+//         console.log("created peer for", participant.socketId);
+//         // localStreamRef.current.getTracks().forEach((track) => {
+//         //   peer.addTrack(track, localStreamRef.current);
+//         // });
+//         const offer = await peer.createOffer();
+
+//         await peer.setLocalDescription(offer);
+
+//         socket.emit("offer", {
+//           targetSocketId: participant.socketId,
+
+//           offer,
+
+//           senderSocketId: socket.id,
+//         });
+//       }
+//     });
+
+//     return () => {
+//       socket.off("participant-count");
+//       socket.off("receive-message");
+//       socket.off("room-users");
+//       socket.off("user-typing");
+//       socket.off("offer");
+//       socket.off("answer");
+//       socket.off("ice-candidate");
+//       socket.off("user-joined");
+// Object.values(
+// peerConnections.current
+// ).forEach(peer=>peer.close());
+
+// peerConnections.current={};
+// //turn off the camera,microphone if still in use
+// if (localStreamRef.current) {
+//   localStreamRef.current.getTracks().forEach(track => track.stop());
+// }
+
+//       //close peer connection on unmount
+//       // if (peerRef.current) {
+//       //   peerRef.current.close();
+//       // }
+
+//        if (socket) {
+//     socket.disconnect();
+//   }
+//     };
+//   }, [roomId]);
 
   return (
     <>
@@ -589,15 +648,15 @@ if (localStreamRef.current) {
         {/* <video ref={remoteVideoRef} autoPlay playsInline /> */}
         <video ref={localVideoRef} autoPlay playsInline muted />
 
-        <button onClick={toggleMic}>
+        <button onClick={handleToggleMic}>
           {isMicOn ? "Mute Mic" : "Unmute Mic"}
         </button>
 
-        <button onClick={toggleVideo}>
+        <button onClick={handleToggleVideo}>
           {isVideoOn ? "Turn Camera Off" : "Turn Camera On"}
         </button>
 
-        <button onClick={shareScreen}>
+        <button onClick={handleShareScreen}>
           {isScreenSharing ? "Sharing Screen" : "Share Screen"}
         </button>
 

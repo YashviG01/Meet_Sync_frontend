@@ -29,6 +29,11 @@ const useMeeting = () => {
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
 
+  // ── UI panel state (new) ──
+  const [activePanel, setActivePanel] = useState(null); // "chat" | "participants" | null
+  const [isHandRaised, setIsHandRaised] = useState(false);
+  const [search, setSearch] = useState("");
+
   // --- WebRTC state ---
   const [remoteStreams, setRemoteStreams] = useState({});
 
@@ -91,6 +96,16 @@ const useMeeting = () => {
     getEngine().emitTyping();
   };
 
+   // ── UI panel handlers (new) ──
+  const handleToggleChat = () =>
+    setActivePanel((p) => (p === "chat" ? null : "chat"));
+ 
+  const handleToggleParticipants = () =>
+    setActivePanel((p) => (p === "participants" ? null : "participants"));
+ 
+  const handleToggleHand = () => setIsHandRaised((v) => !v);
+ 
+  const handleSearchChange = (val) => setSearch(val);
   return {
     // Room
     roomId,
@@ -119,6 +134,14 @@ const useMeeting = () => {
     typingUser,
     handleSendMessage,
     handleTyping,
+    // UI panel handlers
+    activePanel,
+    isHandRaised,
+    search,
+    handleToggleChat,
+    handleToggleParticipants,
+    handleToggleHand,
+    handleSearchChange
   };
 };
 

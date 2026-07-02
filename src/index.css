@@ -1,6 +1,55 @@
 @import "tailwindcss";
 
 
+/* @import "tailwindcss"; */
+
+@theme {
+  /* Colors */
+  --color-meeting-base: #0d0f18;
+  --color-meeting-surface: #161926;
+  --color-meeting-tile: #1c1f2e;
+  --color-meeting-panel: #181b28;
+  --color-meeting-pill: #1e2236;
+
+  --color-meeting-border: rgba(255, 255, 255, 0.07);
+  --color-meeting-border-hover: rgba(255, 255, 255, 0.13);
+
+  --color-meeting-accent: #4f8ef7;
+  --color-meeting-accent-bg: rgba(79, 142, 247, 0.15);
+
+  --color-meeting-red: #ef4444;
+  --color-meeting-red-hover: #dc2626;
+
+  --color-meeting-muted: #7a8099;
+  --color-meeting-dim: #4a5070;
+
+  /* Animations */
+  --animate-blink: blink 1.4s infinite;
+  --animate-slide-in: slideIn 0.25s ease-out;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
 
 
 

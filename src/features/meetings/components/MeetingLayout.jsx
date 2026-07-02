@@ -4,65 +4,105 @@ import VideoGrid from "./VideoGrid";
 import BottomControls from "./BottomControls";
 import ParticipantsSidebar from "./ParticipantsSidebar";
 import ChatSidebar from "./ChatSidebar";
+// import Header from "./Header";
 
-/**
- * Top-level layout shell for the meeting room.
- * Composes all panels — video grid, controls, participants, chat.
- * Receives all data and handlers as props from MeetingRoom via useMeeting.
- */
+
+//  Composes all panels — video grid, controls, participants, chat.
+  // Receives all data and handlers as props from MeetingRoom via useMeeting.
+
 const MeetingLayout = ({
+  //room
   roomId,
+   // Local user (from authStore — pass currentUser.name from useMeeting)
+  localUserName,
+  //video
   localVideoRef,
   remoteStreams,
+  //media
   isMicOn,
   isVideoOn,
   isScreenSharing,
+  //media handlers
   handleToggleMic,
   handleToggleVideo,
   handleShareScreen,
+  //participants
   participantCount,
   users,
+  //chat
   messages,
   typingUser,
-  message,
+  message,//draft
   handleTyping,
   handleSendMessage,
+
+  //ui apnel state
+   activePanel,
+  isHandRaised,
+  search,
+  handleToggleChat,
+  handleToggleParticipants,
+  handleToggleHand,
+  handleSearchChange,
 }) => {
   return (
-    <div style={{ display: "flex", gap: 16 }}>
-      {/* Left: video + controls */}
-      <div style={{ flex: 1 }}>
-        <h1>Meeting Room</h1>
-        <h2>Room: {roomId}</h2>
-
-        <VideoGrid
-          localVideoRef={localVideoRef}
-          remoteStreams={remoteStreams}
-        />
-
-        <BottomControls
-          isMicOn={isMicOn}
-          isVideoOn={isVideoOn}
-          isScreenSharing={isScreenSharing}
-          onToggleMic={handleToggleMic}
-          onToggleVideo={handleToggleVideo}
-          onShareScreen={handleShareScreen}
-        />
-      </div>
-
-      {/* Right: participants + chat */}
-      <div style={{ width: 280 }}>
-        <ParticipantsSidebar
-          participantCount={participantCount}
-          users={users}
-        />
-
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-[#0d0f18]">
+      {/* ── Header ── */}
+      {/* <Header
+        roomId={roomId}
+        meetingName="Weekly Product Sync"
+        participantCount={participantCount}
+        isRecording
+      /> */}
+ 
+      {/* ── Body ── */}
+      <div className="relative flex flex-1 overflow-hidden">
+ 
+        {/* ── Video area ── */}
+        <div className="relative flex-1 overflow-hidden p-3 pb-[76px]">
+          <VideoGrid
+            localVideoRef={localVideoRef}
+            localUserName={localUserName}
+            isMicOn={isMicOn}
+            remoteStreams={remoteStreams}
+            users={users}
+          />
+ 
+          <BottomControls
+            isMicOn={isMicOn}
+            isVideoOn={isVideoOn}
+            isScreenSharing={isScreenSharing}
+            isHandRaised={isHandRaised}
+            isChatOpen={activePanel === "chat"}
+            isParticipantsOpen={activePanel === "participants"}
+            onToggleMic={handleToggleMic}
+            onToggleVideo={handleToggleVideo}
+            onToggleScreenShare={handleShareScreen}
+            onToggleHand={handleToggleHand}
+            onToggleChat={handleToggleChat}
+            onToggleParticipants={handleToggleParticipants}
+            onLeave={() => window.history.back()}
+          />
+        </div>
+ 
+        {/* ── Right panel — only one open at a time ── */}
         <ChatSidebar
+          isOpen={activePanel === "chat"}
+          onClose={handleToggleChat}
           messages={messages}
+          draft={message}
+          onDraftChange={handleTyping}
+          onSend={handleSendMessage}
           typingUser={typingUser}
-          message={message}
-          onTyping={handleTyping}
-          onSendMessage={handleSendMessage}
+        />
+ 
+        <ParticipantsSidebar
+          isOpen={activePanel === "participants"}
+          onClose={handleToggleParticipants}
+          users={users}
+          participantCount={participantCount}
+          search={search}
+          onSearchChange={handleSearchChange}
         />
       </div>
     </div>

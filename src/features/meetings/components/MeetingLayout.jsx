@@ -45,6 +45,8 @@ const MeetingLayout = ({
   handleToggleHand,
   handleSearchChange,
 }) => {
+
+  console.log("users",users[0])
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-[#0d0f18]">
       {/* ── Header ── */}

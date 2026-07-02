@@ -38,8 +38,10 @@ export const startVideo = async (deps) => {
 
   socket.emit("join-room", {
     roomId,
-    user: currentUser.id,
-    name: currentUser.name,
+        user: currentUser,
+
+    // user: currentUser.id,
+    // name: currentUser.name,
   });
 };
 

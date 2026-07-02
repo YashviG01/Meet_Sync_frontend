@@ -17,6 +17,7 @@ const ParticipantsSidebar = ({
   search,
   onSearchChange,
 }) => {
+  console.log("Participants Sidebar:", participants);
   if (!isOpen) return null;
 
   const filtered = participants.filter((p) =>
@@ -58,7 +59,10 @@ const ParticipantsSidebar = ({
 
       {/* List */}
       <div className="flex-1 overflow-y-auto px-2 pb-2">
-        {filtered.map((p) => (
+
+
+        {
+        filtered.map((p) => (
           <div
             key={p.id}
             className="flex items-center justify-between gap-2 rounded-lg px-2.5 py-2 transition-colors duration-150 hover:bg-white/5"

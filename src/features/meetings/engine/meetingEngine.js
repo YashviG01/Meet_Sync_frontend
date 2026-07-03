@@ -1,5 +1,5 @@
 // meeting/engine/meetingEngine.js
-
+//would be imported byth use meeting hook
 import { createPeerConnection as createPeer } from "./peerConnection";
 import { startVideo, toggleMic, toggleVideo, shareScreen } from "./media";
 import { registerSocketEvents } from "./socketEvents";
@@ -27,6 +27,7 @@ export const createMeetingEngine = ({
   setIsMicOn,
   setIsVideoOn,
   setIsScreenSharing,
+  navigate,
 }) => {
   // Internal peer connection wrapper — closes over shared refs
   // so socket event handlers don't need to pass dep objects every call
@@ -96,6 +97,53 @@ export const createMeetingEngine = ({
       setIsScreenSharing,
     });
 
+
+    //leave meeting function defined
+    const leaveMeeting = () => {
+
+  console.log("Leaving meeting");
+
+  // Notify backend
+  socket.emit("leave-room");
+
+  // Stop camera + microphone
+  if (localStreamRef.current) {
+    localStreamRef.current
+      .getTracks()
+      .forEach(track => track.stop());
+  }
+
+  // Stop screen share
+  if (screenStreamRef.current) {
+    screenStreamRef.current
+      .getTracks()
+      .forEach(track => track.stop());
+  }
+
+  // Close peer connections
+  Object.values(
+    peerConnections.current
+  ).forEach(pc => {
+    pc.close();
+  });
+
+  peerConnections.current = {};
+
+  // Clear UI state
+  setRemoteStreams({});
+  setMessages([]);
+  setUsers([]);
+  setParticipantCount(0);
+  setTypingUser("");
+
+  // Navigate
+  navigate("/dashboard");//receing the navigate from usemeetting.usemeeting creates the engine
+
+};
+
+
+
+
   // --- Chat ---
 
   /**
@@ -132,5 +180,6 @@ export const createMeetingEngine = ({
     handleShareScreen,
     sendMessage,
     emitTyping,
+    leaveMeeting,
   };
 };

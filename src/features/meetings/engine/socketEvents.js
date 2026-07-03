@@ -221,18 +221,20 @@ export const registerSocketEvents = (deps) => {
     socket.off("user-left");
     socket.off("user-joined");
 
-    // Close all peer connections
-    Object.values(peerConnections.current).forEach((peer) => peer.close());
-    peerConnections.current = {};
+    // // Close all peer connections
+    // Object.values(peerConnections.current).forEach((peer) => peer.close());
+    // peerConnections.current = {};
 
-    // Stop camera and microphone tracks
-    if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach((track) => track.stop());
-    }
+    // // Stop camera and microphone tracks
+    // if (localStreamRef.current) {
+    //   localStreamRef.current.getTracks().forEach((track) => track.stop());
+    // }
 
-    // Disconnect socket
-    if (socket) {
-      socket.disconnect();
-    }
+    // // Disconnect socket
+    // if (socket) {
+    //   socket.disconnect();
+    // }
+
+
   };
 };

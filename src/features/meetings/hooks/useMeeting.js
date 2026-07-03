@@ -1,7 +1,7 @@
 // meeting/hooks/useMeeting.js
 
 import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useAuthStore from "../../auth/auth/store/authStore";
 import { createMeetingEngine } from "../engine/meetingEngine";
 import socket from "../../../../socket/socket";
@@ -17,7 +17,7 @@ useEffect(() => {
  const { roomId } = useParams();
 // console.log("room id:",roomId)
   const currentUser = useAuthStore((state) => state.user);
-
+const navigate = useNavigate();
   // --- Chat state ---
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
@@ -66,6 +66,8 @@ useEffect(() => {
         setIsMicOn,
         setIsVideoOn,
         setIsScreenSharing,
+      
+       navigate,//sending to the meetingengine,would use it to navigate tonthe dashboard
       });
     }
     return engineRef.current;
@@ -93,6 +95,11 @@ useEffect(() => {
     getEngine().sendMessage(message);
     setMessage("");
   };
+
+  //leave meeting function
+  const handleLeaveMeeting = () => {
+    getEngine().leaveMeeting();
+};
 
   const handleTyping = (value) => {
     setMessage(value);
@@ -171,7 +178,10 @@ try {
     handleToggleChat,
     handleToggleParticipants,
     handleToggleHand,
-    handleSearchChange
+    handleSearchChange,
+    //leave meeting
+   handleLeaveMeeting
+   
   };
 };
 

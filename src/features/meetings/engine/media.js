@@ -1,5 +1,7 @@
 // meeting/engine/media.js
-
+// start video
+// toggle mic,video,screen share
+//would be imported in the meeting engine
 /**
  * Requests camera + microphone access, stores the stream in localStreamRef,
  * attaches it to the local video element, then signals the server to join the room.

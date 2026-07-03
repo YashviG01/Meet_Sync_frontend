@@ -45,6 +45,8 @@ const MeetingLayout = ({
   handleToggleParticipants,
   handleToggleHand,
   handleSearchChange,
+  //leavemeeting
+  handleLeaveMeeting
 }) => {
 // console.log("participants in the meeting layout",participants)
   // console.log("users",users)
@@ -84,7 +86,8 @@ const MeetingLayout = ({
             onToggleHand={handleToggleHand}
             onToggleChat={handleToggleChat}
             onToggleParticipants={handleToggleParticipants}
-            onLeave={() => window.history.back()}
+             onLeave={handleLeaveMeeting}
+            // onLeave={() => window.history.back()}
           />
         </div>
  

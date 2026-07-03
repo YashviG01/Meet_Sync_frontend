@@ -46,6 +46,7 @@ export const createMeetingEngine = ({
    * Maps to Effect 1 in MeetingRoom.
    */
   const initialize = async () => {
+     console.log("ENGINE INITIALIZE");
     await startVideo({
       localStreamRef,
       localVideoRef,

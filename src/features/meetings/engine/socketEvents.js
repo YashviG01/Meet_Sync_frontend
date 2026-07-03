@@ -18,6 +18,7 @@
  * @param {Function} deps.setTypingUser
  */
 export const registerSocketEvents = (deps) => {
+  // console.log("Registering socket events");
   const {
     socket,
     roomId,
@@ -39,7 +40,7 @@ export const registerSocketEvents = (deps) => {
   });
 
   socket.on("receive-message", (data) => {
-    console.log("frontend received", data);
+    // console.log("frontend received", data);
     setMessages((prev) => [...prev, data]);
   });
 
@@ -55,32 +56,48 @@ export const registerSocketEvents = (deps) => {
 
   // --- WebRTC: initiator side ---
 
-  // Fired when a new participant joins after us — we create the offer
-  socket.on("participant-joined", async ({ socketId }) => {
-    console.log("participant joined", socketId);
+  // Fired when a new participant joins after us .no needd for offer.would be used for updates and notification purposes only
+  socket.on("participant-joined", async ({ socketId ,participant}) => {
+    console.log("participant joined", participant,socketId);
 
-    const peer = createPeerConnection(socketId);
+    // const peer = createPeerConnection(socketId);
+    // console.log("creatinggggg in joined",socketId);
+    // // if (peer.isNegotiating) return;
 
-    const offer = await peer.createOffer();
+    
+    // // peer.isNegotiating = true;
+    // const offer = await peer.createOffer();
 
-    await peer.setLocalDescription(offer);
+    // await peer.setLocalDescription(offer);
 
-    socket.emit("offer", {
-      targetSocketId: socketId,
-      offer,
-      senderSocketId: socket.id,
-    });
+    // socket.emit("offer", {
+    //   targetSocketId: socketId,
+    //   offer,
+    //   senderSocketId: socket.id,
+    // });
+    
   });
 
   // Fired when we join a room that already has participants — we create offers for each
   socket.on("existing-participants", async (participants) => {
+    console.log("existing parti", participants);
     for (const participant of participants) {
-      console.log(peerConnections.current);
+      // console.log(peerConnections.current);
+
+//preventing accidental duplicatecreations
+ if (peerConnections.current[participant.socketId]) {
+        continue;
+    }
+
+
+
 
       const peer = createPeerConnection(participant.socketId);
 
-      console.log("created peer for", participant.socketId);
+      console.log("creating offer for in existing", participant.socketId);
+      // if (peer.isNegotiating) return;
 
+      // peer.isNegotiating = true;
       const offer = await peer.createOffer();
 
       await peer.setLocalDescription(offer);
@@ -98,25 +115,31 @@ export const registerSocketEvents = (deps) => {
   // Receive offer, create and send answer
   socket.on("offer", async ({ offer, senderSocketId }) => {
     let peer = peerConnections.current[senderSocketId];
+    console.log("received offer", senderSocketId);
 
     if (!peer) {
       peer = createPeerConnection(senderSocketId);
     }
 
-    if (peer.signalingState !== "stable") {
-      console.log("Ignoring duplicate offer");
-      return;
+    // if (peer.signalingState !== "stable") {
+    //   console.log("Ignoring duplicate offer");
+    //   return;
+    // }
+    try {
+      await peer.setRemoteDescription(offer);
+      console.log("SRD success");
+    } catch (err) {
+      console.error("SRD failed", err);
     }
 
-    await peer.setRemoteDescription(offer);
-
-    if (peer.signalingState !== "have-remote-offer") {
-      console.log("Unexpected signaling state:", peer.signalingState);
-      return;
-    }
+    // console.log("Remote description set");
+    // if (peer.signalingState !== "have-remote-offer") {
+    //   console.log("Unexpected signaling state:", peer.signalingState);
+    //   return;
+    // }
 
     const answer = await peer.createAnswer();
-
+    console.log("ans created");
     await peer.setLocalDescription(answer);
 
     socket.emit("answer", {
@@ -131,16 +154,25 @@ export const registerSocketEvents = (deps) => {
     const peer = peerConnections.current[senderSocketId];
 
     if (!peer) return;
-
+    console.log("received answer", senderSocketId, peer?.signalingState);
     await peer.setRemoteDescription(answer);
+    // peer.isNegotiating = false;
+    console.log("ans remote descrip set");
+   // peer.isNegotiating = false;
   });
 
   // Receive ICE candidates
   socket.on("ice-candidate", async ({ candidate, senderSocketId }) => {
     const peer = peerConnections.current[senderSocketId];
-
+    console.log("ICE received", peer.remoteDescription, peer.signalingState);
     if (!peer) return;
 
+//prevents error
+    if(!peer.remoteDescription)
+    {
+      console.log("queue ice")
+      return
+    }
     try {
       await peer.addIceCandidate(candidate);
     } catch (err) {
@@ -152,7 +184,9 @@ export const registerSocketEvents = (deps) => {
 
   socket.on("screen-share-status", ({ isSharing, userName }) => {
     console.log("SCREEN SHARE EVENT RECEIVED");
-    console.log(`${userName} ${isSharing ? "started" : "stopped"} screen sharing`);
+    console.log(
+      `${userName} ${isSharing ? "started" : "stopped"} screen sharing`,
+    );
   });
 
   // --- Participant leaving ---

@@ -25,6 +25,7 @@ export const createPeerConnection = (targetSocketId, deps) => {
   }
 
   const peer = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+// peer.isNegotiating = false;
 
   peerConnections.current[targetSocketId] = peer;
 
@@ -33,6 +34,7 @@ export const createPeerConnection = (targetSocketId, deps) => {
   });
 
   peer.ontrack = (event) => {
+    console.log("TRACK RECEIVED");
     setRemoteStreams((prev) => ({
       ...prev,
       [targetSocketId]: event.streams[0],

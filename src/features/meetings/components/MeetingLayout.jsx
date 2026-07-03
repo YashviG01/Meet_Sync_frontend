@@ -29,6 +29,7 @@ const MeetingLayout = ({
   //participants
   participantCount,
   users,
+  participants,
   //chat
   messages,
   typingUser,
@@ -45,8 +46,8 @@ const MeetingLayout = ({
   handleToggleHand,
   handleSearchChange,
 }) => {
-
-  console.log("users",users[0])
+// console.log("participants in the meeting layout",participants)
+  // console.log("users",users)
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-[#0d0f18]">
       {/* ── Header ── */}
@@ -102,6 +103,7 @@ const MeetingLayout = ({
           isOpen={activePanel === "participants"}
           onClose={handleToggleParticipants}
           users={users}
+          participants={participants}
           participantCount={participantCount}
           search={search}
           onSearchChange={handleSearchChange}

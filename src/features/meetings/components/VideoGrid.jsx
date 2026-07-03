@@ -9,7 +9,7 @@ import VideoTile from "./VideoTile";
  * @param {string}                          props.localUserName
  * @param {boolean}                         props.isMicOn        - local mic state
  * @param {Object}                          props.remoteStreams   - { [socketId]: MediaStream }
- * @param {Array}                           props.users          - [{ socketId, userName }]
+ * @param {Array}                           props.participants          - [{ socketId, userName }]
  */
 
 
@@ -19,13 +19,13 @@ const VideoGrid = ({
   localUserName = "You",
   isMicOn,
   remoteStreams = {},
-  users = [],
+  participants = [],
 }) => {
 
 
   
   // Map socketId → userName for remote tiles
-  const userMap = Object.fromEntries(users.map((u) => [u.socketId, u.userName]));
+  const userMap = Object.fromEntries(participants.map((u) => [u.socketId, u.userName]));
 
   const remoteTiles = Object.entries(remoteStreams);
   // console.log(remoteTiles.length);

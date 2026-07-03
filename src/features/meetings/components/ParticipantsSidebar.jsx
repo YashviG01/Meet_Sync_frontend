@@ -17,7 +17,7 @@ const ParticipantsSidebar = ({
   search,
   onSearchChange,
 }) => {
-  console.log("Participants Sidebar:", participants);
+  // console.log("Participants Sidebar:", participants);
   if (!isOpen) return null;
 
   const filtered = participants.filter((p) =>

@@ -21,9 +21,9 @@ export const startVideo = async (deps) => {
     audio: true,
   });
 
-  console.log(stream.getAudioTracks());
-  console.log(stream.getAudioTracks()[0]?.enabled);
-  console.log(stream.getAudioTracks()[0]?.readyState);
+  // console.log(stream.getAudioTracks());
+  // console.log(stream.getAudioTracks()[0]?.enabled);
+  // console.log(stream.getAudioTracks()[0]?.readyState);
 
   localStreamRef.current = stream;
 
@@ -35,7 +35,7 @@ export const startVideo = async (deps) => {
   if (!socket.connected) {
     socket.connect();
   }
-
+console.log("JOIN ROOM EMITTED", roomId, currentUser.name);
   socket.emit("join-room", {
     roomId,
         user: currentUser,

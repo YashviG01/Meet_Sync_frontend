@@ -11,8 +11,11 @@ import socket from "../../../../socket/socket";
  * Returns everything MeetingRoom needs to render.
  */
 const useMeeting = () => {
-  const { roomId } = useParams();
-
+useEffect(() => {
+    console.log("USE MEETING MOUNTED");
+}, []); 
+ const { roomId } = useParams();
+// console.log("room id:",roomId)
   const currentUser = useAuthStore((state) => state.user);
 
   // --- Chat state ---
@@ -95,6 +98,31 @@ const useMeeting = () => {
     setMessage(value);
     getEngine().emitTyping();
   };
+  //mapping of the backend users to participantsto feed to all other ui components
+let participants = [];
+
+try {
+  participants = users.map((user) => ({
+    id: user.socketId,
+    socketId: user.socketId,
+    userId: user.userId,
+    name: user.userName,
+
+    isMicOn: true,
+    isVideoOn: true,
+    isSpeaking: false,
+    isHandRaised: false,
+    isHost: false,
+  }));
+
+  // console.log("participants", participants);
+
+} catch (err) {
+  console.error("participants mapping failed");
+  console.log("users =", users);
+  console.error(err);
+}
+
 
    // ── UI panel handlers (new) ──
   const handleToggleChat = () =>
@@ -106,6 +134,7 @@ const useMeeting = () => {
   const handleToggleHand = () => setIsHandRaised((v) => !v);
  
   const handleSearchChange = (val) => setSearch(val);
+ 
   return {
     // Room
     roomId,
@@ -127,6 +156,7 @@ const useMeeting = () => {
     // Participants
     users,
     participantCount,
+    participants,
 
     // Chat
     message,

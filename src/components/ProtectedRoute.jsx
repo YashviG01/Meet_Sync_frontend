@@ -15,7 +15,7 @@ const ProtectedRoute = ({
     );
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Loading the meeting for you...</div>;
   }
 
   if (!user) {

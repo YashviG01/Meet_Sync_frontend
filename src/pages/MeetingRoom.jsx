@@ -1,6 +1,6 @@
 
-import useMeeting from "../../features/meetings/hooks/useMeeting";
-import MeetingLayout from "../../features/meetings/components/MeetingLayout";
+import useMeeting from "../features/meetings/hooks/useMeeting";
+import MeetingLayout from "../features/meetings/components/MeetingLayout";
 import { useEffect } from "react";
 
 const MeetingRoom = () => {

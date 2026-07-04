@@ -1,21 +1,10 @@
-import { useState } from "react";
+import useJoinMeeting from "../features/join/hooks/useJoinMeeting";
+import JoinMeetingLayout from "../features/join/components/JoinMeetingLayout";
 
 const JoinMeeting = () => {
-  const [meetingId, setMeetingId] =
-    useState("");
+    const props = useJoinMeeting();
 
-  return (
-    <div>
-      <h1>Join Meeting</h1>
-
-      <input
-        value={meetingId}
-        onChange={(e) =>
-          setMeetingId(e.target.value)
-        }
-      />
-    </div>
-  );
+    return <JoinMeetingLayout {...props} />;
 };
 
 export default JoinMeeting;

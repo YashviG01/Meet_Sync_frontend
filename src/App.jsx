@@ -8,7 +8,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import { Toaster } from "sonner";
 import useCurrentUser from "./features/auth/hooks/useCurrentUser";
 import ResetPassword from "./pages/ResetPassword";
-import MeetingRoom from "./pages/MeetingRoom/MeetingRoom";
+import MeetingRoom from "./pages/MeetingRoom";
+import JoinMeeting from "./pages/JoinMeeting";
 
 const App = () => {
   useCurrentUser();
@@ -30,18 +31,18 @@ const App = () => {
           }
         />
 
-<Route
-path="/meeting/:roomId"
-element={
-    <ProtectedRoute>
-        <MeetingRoom />
-    </ProtectedRoute>
-}
+        <Route
+          path="/meeting/:roomId"
+          element={
+            <ProtectedRoute>
+              <MeetingRoom />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+    path="/join"
+    element={<JoinMeeting />}
 />
-
-
-
-
       </Routes>
       <Toaster richColors />
     </>

@@ -3,9 +3,7 @@ import { CalendarPlus, Zap, LogIn } from "lucide-react";
 import Sidebar from "../features/dashboard/components/Sidebar";
 import DashboardHeader from "../features/dashboard/components/DashboardHeader";
 import { useNavigate } from "react-router-dom";
-
 import { toast } from "sonner";
-
 import  useStartInstantMeeting 
 from "../features/meetings/hooks/useStartInstantMeeting";
 
@@ -140,6 +138,10 @@ console.log(result.meeting.roomId)
 
 };
 
+//join button
+const handleJoinClick = () => {
+    navigate("/join");
+};
 //   const handleJoin = (id) => {
 //     console.log("Join meeting:", id);
 //     handleNavigate("waiting-lobby");
@@ -228,7 +230,7 @@ loading
 
 {/* join button */}
               <button
-                onClick={() => handleNavigate("join-meeting")}
+                onClick= {handleJoinClick}
                 className="
                   flex items-center gap-2 border border-gray-200 bg-white
                   hover:bg-gray-50 hover:border-gray-300 text-gray-700 text-sm font-semibold

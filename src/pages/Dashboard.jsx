@@ -142,6 +142,9 @@ console.log(result.meeting.roomId)
 const handleJoinClick = () => {
     navigate("/join");
 };
+const handleScheduleClick = () => {
+    navigate("/scheduleMeeting");
+};
 //   const handleJoin = (id) => {
 //     console.log("Join meeting:", id);
 //     handleNavigate("waiting-lobby");
@@ -181,7 +184,7 @@ const handleJoinClick = () => {
 
                 {/* schedule */}
               <button
-                onClick={() => handleNavigate("schedule-meeting")}
+                onClick={handleScheduleClick}
                 className="
                   flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700
                   text-white text-sm font-semibold px-4 py-2.5 rounded-xl

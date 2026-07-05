@@ -10,6 +10,7 @@ import useCurrentUser from "./features/auth/hooks/useCurrentUser";
 import ResetPassword from "./pages/ResetPassword";
 import MeetingRoom from "./pages/MeetingRoom";
 import JoinMeeting from "./pages/JoinMeeting";
+import ScheduleMeeting from "./pages/ScheduleMeeting";
 
 const App = () => {
   useCurrentUser();
@@ -42,6 +43,11 @@ const App = () => {
         <Route
     path="/join"
     element={<JoinMeeting />}
+/>
+
+     <Route
+    path="/scheduleMeeting"
+    element={<ScheduleMeeting />}
 />
       </Routes>
       <Toaster richColors />

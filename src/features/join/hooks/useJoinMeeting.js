@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { joinMeeting } from "../api/joinApi";
+import { toast } from "sonner";
 
 const useJoinMeeting = () => {
   const navigate = useNavigate();
@@ -24,12 +25,24 @@ const useJoinMeeting = () => {
     try {
       setLoading(true);
       setError("");
-      console.log("sending request");
-      const response = await joinMeeting(roomId.trim());
-      console.log("request at join endpoint made")
+      const response = await joinMeeting(roomId.trim()); 
+      
+      
       console.log("resp received from the request", response);
+      console.log("navigating to",response.roomId)
+
+
+if (response.alreadyJoined) {
+    toast.info(response.message);
+    return;
+}
+
+toast.success("Joining meeting...");
+
       navigate(`/meetings/${response.roomId}`);
-      console.log("navigated to the meet room");
+
+
+
     } catch (err) {
       console.log(err);
       setError(err.response?.data?.message || "Unable to join meeting.");

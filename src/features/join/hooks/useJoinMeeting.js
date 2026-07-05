@@ -10,11 +10,12 @@ const useJoinMeeting = () => {
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setRoomId(e.target.value);
+    setRoomId(e.target.value);//updating the state
   };
 
   const handleJoin = async () => {
-    console.log("join button clicked")
+    console.log("join button clicked");
+    console.log(roomId);
     if (!roomId.trim()) {
       setError("Please enter a Meeting ID");
       return;
@@ -23,16 +24,15 @@ const useJoinMeeting = () => {
     try {
       setLoading(true);
       setError("");
-
+      console.log("sending request");
       const response = await joinMeeting(roomId.trim());
-
-      navigate(`/meeting/${response.roomId}`);
+      console.log("request at join endpoint made")
+      console.log("resp received from the request", response);
+      navigate(`/meetings/${response.roomId}`);
+      console.log("navigated to the meet room");
     } catch (err) {
-        console.log(err)
-      setError(
-        err.response?.data?.message ||
-          "Unable to join meeting."
-      );
+      console.log(err);
+      setError(err.response?.data?.message || "Unable to join meeting.");
     } finally {
       setLoading(false);
     }

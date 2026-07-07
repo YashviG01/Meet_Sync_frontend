@@ -58,37 +58,10 @@ const ScheduleSuccess = ({
     setCopiedLink(true);
   };
 
-//   const formattedDate = meeting?.startTime
-//     ? new Date(meeting.startTime).toLocaleDateString(
-//         "en-IN",
-//         {
-//           weekday: "long",
-//           day: "numeric",
-//           month: "long",
-//           year: "numeric",
-//         }
-//       )
-//     : "";
 
-//   const formattedStart = meeting?.startTime
-//     ? new Date(meeting.startTime).toLocaleTimeString(
-//         "en-IN",
-//         {
-//           hour: "numeric",
-//           minute: "2-digit",
-//         }
-//       )
-//     : "";
 
-//   const formattedEnd = meeting?.endTime
-//     ? new Date(meeting.endTime).toLocaleTimeString(
-//         "en-IN",
-//         {
-//           hour: "numeric",
-//           minute: "2-digit",
-//         }
-//       )
-//     : "";
+
+
 
   return (
     <motion.div

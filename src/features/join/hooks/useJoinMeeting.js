@@ -40,6 +40,7 @@ if (response.alreadyJoined) {
 toast.success("Joining meeting...");
 
       navigate(`/meetings/${response.roomId}`);
+       return response;
 
 
 

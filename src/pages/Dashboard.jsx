@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import  useStartInstantMeeting 
 from "../features/meetings/hooks/useStartInstantMeeting";
-
+// import MeetingsTable from "../features/dashboard/components/MeetingsTable";
 // import StatsGrid from "../features/dashboard/components/StatsGrid";
 // import MeetingsTable from "../features/dashboard/components/MeetingTable"
 
@@ -95,7 +95,7 @@ from "../features/meetings/hooks/useStartInstantMeeting";
 //     meetingId: "MSY-5532",
 //   },
 // ];
-
+// import useDashboard from "../features/dashboard/hooks/useDashboard";
 export default function Dashboard({ onNavigate }) {
   const [activePage, setActivePage] = useState("dashboard");
 const navigate = useNavigate();

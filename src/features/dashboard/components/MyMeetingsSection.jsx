@@ -1,11 +1,12 @@
 import MeetingTable from "./MeetingTable";
 import EmptyState from "./EmptyState";
-
+import useJoinMeeting from "../hooks/useJoinMeeting";
 export default function MyMeetingsSection({
   meetings,
   loading,
   error,
 }) {
+    const { joinMeetingDashboard } = useJoinMeeting();
   if (loading) {
     return (
       <div className="rounded-xl bg-white p-8 shadow-sm">
@@ -31,6 +32,7 @@ export default function MyMeetingsSection({
   }
 
   return (
-    <MeetingTable meetings={meetings} />
+    <MeetingTable meetings={meetings}
+                  onJoin={joinMeetingDashboard} />
   );
 }

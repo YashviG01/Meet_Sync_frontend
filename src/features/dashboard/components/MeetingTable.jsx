@@ -11,7 +11,7 @@ const COLUMNS = [
 ];
 
 export default function MeetingsTable(
- { meetings}
+ { meetings,onJoin}
 ) 
 { console.log(meetings)
   return (
@@ -74,6 +74,7 @@ console.log("typeof =", typeof meeting._id);
               <MeetingRow
                 key={meeting._id}
                 meeting={meeting}
+                onJoin={onJoin}
               />
             ))}
 

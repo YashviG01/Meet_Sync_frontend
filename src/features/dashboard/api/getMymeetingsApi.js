@@ -1,10 +1,7 @@
 import api from "../../../services/api/client";
 
-export const scheduleMeetingApi = async (meetingData) => {
-  const response = await api.post(
-    "/meeting/",
-    meetingData
-  );
+export const getMyMeetings = async () => {
+  const response = await api.get("/meeting/");
 
   return response.data;
 };

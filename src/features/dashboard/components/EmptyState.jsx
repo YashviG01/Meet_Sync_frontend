@@ -7,7 +7,7 @@ export default function EmptyState({
 }) {
   return (
     <tr>
-      <td colSpan={9}>
+      <td colSpan={5}>
         <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
           <div className="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mb-4">
             <CalendarX size={24} className="text-gray-400" />

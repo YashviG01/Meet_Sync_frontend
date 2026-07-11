@@ -23,7 +23,7 @@ export default function MeetingActions({
 
       <button
         disabled={!canJoin}
-        onClick={() => onJoin(roomId)}
+       onClick={() => onJoin?.(roomId)}
         className={`
           flex items-center gap-1.5
           rounded-lg
@@ -48,7 +48,7 @@ export default function MeetingActions({
       {isHost && (
         <>
           <button
-            onClick={() => onEdit(roomId)}
+            onClick={() => onEdit?.(roomId)}
             className="
               p-2
               rounded-lg
@@ -63,7 +63,7 @@ export default function MeetingActions({
           </button>
 
           <button
-            onClick={() => onDelete(roomId)}
+           onClick={() => onDelete?.(roomId)}
             className="
               p-2
               rounded-lg

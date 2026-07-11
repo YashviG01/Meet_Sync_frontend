@@ -2,6 +2,8 @@ import { useState } from "react";
 import { CalendarPlus, Zap, LogIn } from "lucide-react";
 import Sidebar from "../features/dashboard/components/Sidebar";
 import DashboardHeader from "../features/dashboard/components/DashboardHeader";
+import MyMeetingsSection  from "../features/dashboard/components/MyMeetingsSection";
+
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import  useStartInstantMeeting 
@@ -95,14 +97,18 @@ from "../features/meetings/hooks/useStartInstantMeeting";
 //     meetingId: "MSY-5532",
 //   },
 // ];
-// import useDashboard from "../features/dashboard/hooks/useDashboard";
+import useMyMeetings from "../features/dashboard/hooks/useMyMeetings";
 export default function Dashboard({ onNavigate }) {
   const [activePage, setActivePage] = useState("dashboard");
 const navigate = useNavigate();
-
+const {
+    meetings,
+    loading,
+    error,
+} = useMyMeetings();
 const {
     createMeeting,
-    loading
+    // loading
 } = useStartInstantMeeting();
 
 
@@ -252,6 +258,16 @@ loading
           </div> */}
 
           {/* ── Meetings table ────────────────────────────────── */}
+      <MyMeetingsSection
+    meetings={meetings}
+    loading={loading}
+    error={error}
+/>
+
+
+
+
+
           {/* <MeetingsTable
             meetings={MEETINGS}
             title="Upcoming Meetings"

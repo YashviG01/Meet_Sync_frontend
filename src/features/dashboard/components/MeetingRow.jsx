@@ -28,6 +28,7 @@ export default function MeetingRow({
     isHost,
     roomId,
   } = meeting;
+  console.log(onDelete)
 
   return (
     <tr

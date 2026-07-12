@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import  useStartInstantMeeting 
 from "../features/meetings/hooks/useStartInstantMeeting";
-// import MeetingsTable from "../features/dashboard/components/MeetingsTable";
 // import StatsGrid from "../features/dashboard/components/StatsGrid";
 // import MeetingsTable from "../features/dashboard/components/MeetingTable"
 
@@ -105,7 +104,10 @@ const {
     meetings,
     loading,
     error,
+    fetchMeetings
 } = useMyMeetings();
+
+console.log("fetch meetings type",typeof fetchMeetings)
 const {
     createMeeting,
     // loading
@@ -257,24 +259,16 @@ loading
             <StatsGrid />
           </div> */}
 
-          {/* ── Meetings table ────────────────────────────────── */}
+
+{/* my meetings section */}
       <MyMeetingsSection
     meetings={meetings}
     loading={loading}
     error={error}
+    fetchMeetings={fetchMeetings}
 />
 
 
-
-
-
-          {/* <MeetingsTable
-            meetings={MEETINGS}
-            title="Upcoming Meetings"
-            onJoin={handleJoin}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          /> */}
         </main>
       </div>
     </div>

@@ -11,9 +11,11 @@ const COLUMNS = [
 ];
 
 export default function MeetingsTable(
- { meetings,onJoin}
+ { meetings,onJoin,onDelete}
 ) 
 { console.log(meetings)
+    console.log(onDelete)
+
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
 
@@ -75,6 +77,7 @@ console.log("typeof =", typeof meeting._id);
                 key={meeting._id}
                 meeting={meeting}
                 onJoin={onJoin}
+                 onDelete={onDelete}
               />
             ))}
 

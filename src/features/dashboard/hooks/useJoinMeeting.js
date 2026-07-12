@@ -19,7 +19,7 @@ export default function useJoinMeeting() {
     try {
       setLoading(true);
 
-      const response = await joinMeeting(roomId);
+      const response = await joinMeeting(roomId);//hitting the join button with this room id
       console.log("resp inside the dashboard join call",response);
       if (response.success) {
         console.log("navigating from the dqshboard to the meet room with room id",roomId)

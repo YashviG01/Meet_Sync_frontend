@@ -1,4 +1,3 @@
-// // features/dashboard/hooks/useDashboard.js
 
 //fetching the meetings for the logged in user
 
@@ -37,7 +36,7 @@ export default function useMyMeetings() {
         meetings,
         loading,
         error,
-        refetchMeetings: fetchMeetings,
+        fetchMeetings,
     };
 }
 

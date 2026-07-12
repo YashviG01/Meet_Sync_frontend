@@ -12,6 +12,7 @@ export default function MeetingActions({
   onEdit,
   onDelete,
 }) {
+  console.log(onDelete)
   const canJoin =
     status !== "completed" &&
     status !== "cancelled";
@@ -43,7 +44,7 @@ export default function MeetingActions({
         Join
       </button>
 
-      {/* Host-only actions */}
+      {/* Host-only actions -edit and delete*/}
 
       {isHost && (
         <>
@@ -63,7 +64,9 @@ export default function MeetingActions({
           </button>
 
           <button
-           onClick={() => onDelete?.(roomId)}
+           onClick={() => {
+            console.log("delete clicked")
+            onDelete?.(roomId)}}
             className="
               p-2
               rounded-lg

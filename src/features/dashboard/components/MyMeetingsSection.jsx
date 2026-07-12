@@ -1,12 +1,17 @@
 import MeetingTable from "./MeetingTable";
 import EmptyState from "./EmptyState";
 import useJoinMeeting from "../hooks/useJoinMeeting";
+import useDeleteMeeting from "../hooks/useDeleteMeeting";
 export default function MyMeetingsSection({
   meetings,
   loading,
   error,
+    fetchMeetings
 }) {
     const { joinMeetingDashboard } = useJoinMeeting();
+    const { deleteMeeting } =
+    useDeleteMeeting(fetchMeetings);
+    console.log(deleteMeeting)
   if (loading) {
     return (
       <div className="rounded-xl bg-white p-8 shadow-sm">
@@ -33,6 +38,7 @@ export default function MyMeetingsSection({
 
   return (
     <MeetingTable meetings={meetings}
-                  onJoin={joinMeetingDashboard} />
+                  onJoin={joinMeetingDashboard}
+                  onDelete={deleteMeeting} />
   );
 }
